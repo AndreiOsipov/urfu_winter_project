@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    {% load static %}
+     <img src="/Users/nufim/Documents/Design/2.jpg">
+     <link href="{% static 'calc_app/right.css' %}" rel="stylesheet">
+    <title>Барьер</title>
+  </head>
+  <body>
+    <main class="main-content">
+      <section class="objects">
+        <h2>Автоматизированный подбор оборудования</h2>
+        <ul class="cards">
+          <li class="card">
+            <p class="result">
+              <div id="click-expand1"></div>
+              <div class="wrap-expand-table"><a href="#close"><h3 class="card-title">Дом</h3></a><a href="#click-expand1">Дом</a>
+                <table class="table">
+                  <form action="{%url 'calc_app:calc_page' %}" method="post">
+                    {% csrf_token %}
+                  <tbody>
+                    <tr>
+                      <th><p class="card-features-title"><h4>Характеристики:</h4></p></th>
+                    </tr>
+                      <ul class="card-features">
+                  <tr>
+                    <td><li>Количество человек</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ house_form.people_number}}</td>
+                    <td>{{house_form.action}}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Жесткость 0Ж</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ house_form.water_hardness }}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Железо</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ house_form.water_iron }}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Мутность</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ house_form.water_turbidity }}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Ph</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ flat_form.water_PH}}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Окисляемость</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ house_form.water_oxid }}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Нитраты</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ house_form.water_nitrat }}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Общее солесодержание</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ house_form.water_salt }}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Нитриты</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ house_form.water_nitrit }}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Цветность</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{house_form.water_color}}</td>
+                  </tr>
+                  <tr>
+                    <td><li>Есть запах?</li></td>
+                  </tr>
+                  <tr>
+                    <td>{{ house_form.water_smell }}</td>
+                  </tr>
+                  <tr>
+                    <td><input type="submit", value="SUBMIT"></td>
+                  </tr>
+                      </ul>
+                  </tbody>
+                </form>
+                </table>  
+              </div>
+            </span>
+        </p>
+              <div id="click-expand2"></div>
+                  <div class="wrap-expand-table"><a href="#close"><h3 class="card-title">Квартира</h3></a><a href="#click-expand2">Квартира</a>
+                    <table class="table">
+                      <form action="{%url 'calc_app:calc_page' %}" method="post">
+                        {% csrf_token %}
+                      <tbody>
+                        <tr>
+                          <th><p class="card-features-title"><h4>Характеристики:</h4></p></th>
+                        </tr>
+                          <ul class="card-features">
+                      <tr>
+                        <!--
+                        <td><li>Количество человек</li></td>
+                      </tr>
+                      <tr>
+                        <td>{{ flat }}</td>
+                      </tr>
+                      <tr>-->
+                        <td><li>Жесткость</li></td>
+                        <td>{{flat_form.action}}</td>
+                      </tr>
+                      <tr>
+                        <td>{{ flat_form.water_hardness }}</td>
+                      </tr>
+                      <tr>
+                        <td><li>Железо</li></td>
+                      </tr>
+                      <tr>
+                        <td>{{ flat_form.water_iron }}</td>
+                      </tr>
+                      <tr>
+                        <td><li>Мутность</li></td>
+                      </tr>
+                      <tr>
+                        <td>{{ flat_form.water_turbidity }}</td>
+                      </tr>
+                      <tr>
+                        <td><li>Ph</li></td>
+                      </tr>
+                      <tr>
+                        <td>{{ flat_form.water_PH }}</td>
+                      </tr>
+                      <tr>
+                        <td><li>Окисляемость</li></td>
+                      </tr>
+                      <tr>
+                        <td>{{ flat_form.water_oxid }}</td>
+                      </tr>
+                      <tr>
+                        <td><li>Нитраты</li></td>
+                      </tr>
+                      <tr>
+                        <td>{{ flat_form.water_nitrat }}</td>
+                      </tr>
+                      <tr>
+                        <td><li>Общее солесодержание</li></td>
+                      </tr>
+                      <tr>
+                        <td>{{ flat_form.water_salt }}</td>
+                      </tr>
+                      <tr>
+                        <td><li>Нитриты</li></td>
+                      </tr>
+                      <tr>
+                        <td>{{ flat_form.water_nitrit }}</td>
+                      </tr>
+                      <tr>
+                        <td><li>Цветность</li></td>
+                      </tr>
+                      <tr>
+                        <td> {{ flat_form.water_color }} </td>
+                      </tr>
+                      <tr>
+                        <td><input type="submit", value="SUBMIT"></td>
+                      </tr>
+                          </ul>
+                      </tbody>
+                      </form>
+                    </table>  
+                  </div>
+                </span>
+            </p>
+            <div id="click-expand3"></div>
+            <div class="wrap-expand-table"><a href="#close"><h3 class="card-title">Дача</h3></a><a href="#click-expand3">Дача</a>
+              <table class="table">
+                <form action="{%url 'calc_app:calc_page' %}" method="post">
+                  {% csrf_token %}
+                <tbody>
+                  <tr>
+                    <th><p class="card-features-title"><h4>Характеристики:</h4></p></th>
+                  </tr>
+                    <ul class="card-features">
+                <tr>
+                  <td><li>Количество человек</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.people_number }}</td>
+                  <td>{{country_form.action}}</td>
+                </tr>
+                <tr>
+                  <td><li>Жесткость 0Ж</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_hardness }}</td>
+                </tr>
+                <tr>
+                  <td><li>Железо</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_iron }}</td>
+                </tr>
+                <tr>
+                  <td><li>Мутность</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_turbidity }}</td>
+                </tr>
+                <tr>
+                  <td><li>Ph</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_PH }}</td>
+                </tr>
+                <tr>
+                  <td><li>Окисляемость</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_oxid }}</td>
+                </tr>
+                <tr>
+                  <td><li>Нитраты</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_nitrat }}</td>
+                </tr>
+                <tr>
+                  <td><li>Общее солесодержание</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_salt }}</td>
+                </tr>
+                <tr>
+                  <td><li>Нитриты</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_nitrit }}</td>
+                </tr>
+                <tr>
+                  <td><li>Цветность</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_color }}</td>
+                </tr>
+                <tr>
+                  <td><li>Есть запах?</li></td>
+                </tr>
+                <tr>
+                  <td>{{ country_form.water_smell }}</td>
+                </tr>
+                <tr>
+                  <td><input type="submit", value="SUBMIT"></td>
+                </tr>
+                    </ul>
+                </tbody>
+                </form>
+              </table>  
+            </div>
+          </span>
+          </p> 
+       </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    {% load static %}
+    <img src="/Users/nufim/Documents/Design/2.jpg">
+    <link href="{% static 'calc_app/style.css' %}" rel="stylesheet">
+    <title>Барьер</title>
+  </head>
+  <body>
+    <main class="main-content">
+      <section class="objects">
+        <h2>Автоматизированный подбор оборудования</h2>
+        <ul class="cards">
+          <li class="card">
+            <h3 class="card-title">Дом</h3>
+            <p class="card-features-title"><h4>Характеристики:</h4></p>
+            
+            <form action="{%url 'calc_app:calc_page' %}" method="post">
+              {% csrf_token %}
+              <ul class="card-features">
+              <li>Количество человек</li>
+              {{ form.people_number}}
+              <li>Жесткость 0Ж</li>
+              {{ form.water_hardness }}
+              <li>Железо</li>
+              {{ form.water_iron }}
+              <li>Мутность</li>
+              {{ form.water_turbidity }}
+              <li>Ph</li>
+              {{ form.water_PH}}
+              <li>Окисляемость</li>
+              {{ form.water_oxid }}
+              <li>Нитраты</li>
+              {{ form.water_nitrat }}
+              <li>Общее солесодержание</li>
+              {{ form.water_salt }}
+              <li>Нитриты</li>
+              {{ form.water_nitrit }}
+              <li>Цветность</li>
+              {{form.water_color}}
+              <li>Есть запах?</li>
+              {{ form.water_smell }}
+              </ul>
+              <input type="submit", value="HOME">
+            </form>
+       {% for el in main_filters %}
+       <p>{{el.name}}</p>
+       {% endfor %}
+       {% for kit in kitchen_filters %}
+       <p>{{ kit.name }}</p>
+       {% endfor %}
+       {% for filler in fillers%}
+       <p>{{ filler.name }}</p>
+       {% endfor %}
+      </section>
+    </main>
+  </body>
+</html>
