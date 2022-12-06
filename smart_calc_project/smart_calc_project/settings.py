@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-=)&1)89z(ext(z8#gu4o_zo5s@8ev$m9pp$d1!)2od(*&43yz)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.0.105']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -75,14 +75,10 @@ WSGI_APPLICATION = 'smart_calc_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
+DATABASES = DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': '2082',
-        'HOST': 'localhost',
-        'PORT': '', 
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
