@@ -8,14 +8,15 @@
   </head>
   <body>
     <main class="main-content">
+      <h2>Автоматизированный подбор оборудования</h2>
       <section class="objects">
-        <h2>Автоматизированный подбор оборудования</h2>
         <ul class="cards">
           <li class="card">
             <p class="result">
               <div id="click-expand1"></div>
               <div class="wrap-expand-table"><a href="#close"><h3 class="card-title">Дом</h3></a><a href="#click-expand1">Дом</a>
                 <table class="table">
+
                   <form action="{%url 'calc_app:calc_page' %}" method="post">
                     {% csrf_token %}
                   <tbody>
@@ -91,7 +92,7 @@
                     <td>{{ house_form.water_smell }}</td>
                   </tr>
                   <tr>
-                    <td><input type="submit", value="SUBMIT"></td>
+                    <td><input type="submit", value="Поиск"></td>
                   </tr>
                       </ul>
                   </tbody>
@@ -173,7 +174,7 @@
                         <td> {{ flat_form.water_color }} </td>
                       </tr>
                       <tr>
-                        <td><input type="submit", value="SUBMIT"></td>
+                        <td><input type="submit", value="Поиск"></td>
                       </tr>
                           </ul>
                       </tbody>
@@ -196,71 +197,71 @@
                   <td><li>Количество человек</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.people_number }}</td>
-                  <td>{{country_form.action}}</td>
+                  <td>{{ country_house_form.people_number }}</td>
+                  <td>{{country_house_form.action}}</td>
                 </tr>
                 <tr>
                   <td><li>Жесткость 0Ж</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_hardness }}</td>
+                  <td>{{ country_house_form.water_hardness }}</td>
                 </tr>
                 <tr>
                   <td><li>Железо</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_iron }}</td>
+                  <td>{{ country_house_form.water_iron }}</td>
                 </tr>
                 <tr>
                   <td><li>Мутность</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_turbidity }}</td>
+                  <td>{{ country_house_form.water_turbidity }}</td>
                 </tr>
                 <tr>
                   <td><li>Ph</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_PH }}</td>
+                  <td>{{ country_house_form.water_PH }}</td>
                 </tr>
                 <tr>
                   <td><li>Окисляемость</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_oxid }}</td>
+                  <td>{{ country_house_form.water_oxid }}</td>
                 </tr>
                 <tr>
                   <td><li>Нитраты</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_nitrat }}</td>
+                  <td>{{ country_house_form.water_nitrat }}</td>
                 </tr>
                 <tr>
                   <td><li>Общее солесодержание</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_salt }}</td>
+                  <td>{{ country_house_form.water_salt }}</td>
                 </tr>
                 <tr>
                   <td><li>Нитриты</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_nitrit }}</td>
+                  <td>{{ country_house_form.water_nitrit }}</td>
                 </tr>
                 <tr>
                   <td><li>Цветность</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_color }}</td>
+                  <td>{{ country_house_form.water_color }}</td>
                 </tr>
                 <tr>
                   <td><li>Есть запах?</li></td>
                 </tr>
                 <tr>
-                  <td>{{ country_form.water_smell }}</td>
+                  <td>{{ country_house_form.water_smell }}</td>
                 </tr>
                 <tr>
-                  <td><input type="submit", value="SUBMIT"></td>
+                  <td><input type="submit", value="Поиск"></td>
                 </tr>
                     </ul>
                 </tbody>
@@ -268,8 +269,55 @@
               </table>  
             </div>
           </span>
-          </p> 
-       </section>
-    </main>
+          </p>
+        </section>
+        <section class="output-section">
+          <table>
+            <tr>
+              <td>название</td>
+              <td>цена</td>
+              <td>Количество на складе</td>
+            </tr>
+          {% if output_form.main_filters_tr|length > 0%}
+          {%for main_f in output_form.main_filters_tr%}
+          <tr>
+            <td>{{main_f.name_input}}</td>
+            <td>{{main_f.price_input}}</td>
+            <td>{{main_f.num}}</td>
+          </tr>
+          {% endfor%}
+          {% endif %}
+          {% if output_form.kitchen_filters_tr|length > 0%}
+          {% for kitchen_f in output_form.kitchen_filters_tr %}
+          <tr>
+            <td class="table_element">{{kitchen_f.name_input}}</td>
+            <td class="table_element">{{kitchen_f.price_input}}</td>
+            <td class="table_element">{{kitchen_f.num}}</td>
+          </tr>
+          {% endfor %}
+          {% endif %}
+          </table>
+          <table>
+            <tr>
+              <td>название</td>
+              <td>цена</td>
+              <td>необходимый объем</td>
+              <td>объем на складе(литров/кг)</td>
+            </tr>
+          {% if output_form.fillers_tr|length > 0%}
+          {% for filler in output_form.fillers_tr%}
+          
+          <tr>
+            
+            <td class="table_element">{{ filler.name }}</td>
+            <td class="table_element">{{ filler.price }}</td>
+            <td class="table_element">{{ filler.necessary_v }}</td>
+            <td class="table_element">{{ filler.stock_v }}</td>
+          </tr>
+          {% endfor %} 
+          {% endif %}
+        </table>
+        </section>
+      </main>
   </body>
 </html>
