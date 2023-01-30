@@ -359,6 +359,7 @@ class Logic:
         for checker in logic_dict.keys():
             if checker.check(water_hard, water_iron, water_mpc, smell):
                 print(str(checker)+'\n', logic_dict[checker])
+                print(f'people number: {people_num}')
                 if logic_dict == self.HOUSE_BASE_LOGIC_DICT or logic_dict == self.HOUSE_BASE_LOGIC_DICT_WITHOUT_VALUES:
                     index = self.__get_house_dict_index(people_num)
                     return FinalOffer(
@@ -375,6 +376,8 @@ class Logic:
                         logic_dict[checker][index]['fillers'],
                         {'usually':self.__get_extra_country_equipment_id(people_num)})
                 return FinalOffer(
+                    equipments=[],
+                    fillers=[],
                     kitchen_filters=logic_dict[checker],
                     extra_equipments={'usually': ['PR0000','PR0001'],
                     'special': ['FD0000','SL0000']})
@@ -386,6 +389,7 @@ class Logic:
             'house_form': self.HOUSE_BASE_LOGIC_DICT}
         print('=='*20)
         print('smell:',smell)
+        print(f'people num in outer f: {people_num}')
         return self.__get_final_offers_ids(form_name_logic_dict[name_form], 
         water_hard=water_hard, 
         water_iron=water_ferum, 

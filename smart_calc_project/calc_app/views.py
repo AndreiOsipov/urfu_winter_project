@@ -1,5 +1,5 @@
 from .logic import Logic, FinalOffer, FillerInfo
-from .models import Equipment, Filler
+from .models import Equipment
 from django import forms
 
 from django.shortcuts import render
@@ -16,17 +16,18 @@ class FullFiller:
 
 class FullOffer:
     def __init__(self, ids_offer:FinalOffer ) -> None:
-        self.main_filters = [Equipment.objects.get(equipment_id=main_id) for main_id in ids_offer.main_equipments]
-        self.kitchen_filters = [Equipment.objects.get(equipment_id=kitchens_filter_id) for kitchens_filter_id in ids_offer.kitchen_filters]
-        __res = [self.__get_filler_info(filler) for filler in ids_offer.fillers]
+        self.main_filters = [Equipment.objects.filter(equipment_id=main_id).first() for main_id in ids_offer.main_equipments if Equipment.objects.filter(equipment_id=main_id).first()!=None]
+        self.kitchen_filters = [Equipment.objects.filter(equipment_id=kitchens_filter_id).first() for kitchens_filter_id in ids_offer.kitchen_filters if Equipment.objects.filter(equipment_id=kitchens_filter_id).first() != None]
+        __res = [self.__get_filler_info(filler) for filler in ids_offer.fillers if self.__get_filler_info(filler)!= None]
 
         self.fillers = [FullFiller(r[0],r[1],r[2],r[3],r[4]) for r in __res]
 
         self.extra_equipmets = ids_offer.extra_offers
 
     def __get_filler_info(self, filler: FillerInfo):
-        filler_row = Filler.objects.get(filler_id=filler.id)
-        print(f'на возврат\n{(filler_row.filler_id, filler_row.filler_name, filler.v, filler_row.filler_v, filler.price)}')
+        filler_row = Filler.objects.filter(filler_id=filler.id).first()
+        
+            #print(f'на возврат\n{(filler_row.filler_id, filler_row.filler_name, filler.v, filler_row.filler_v, filler.price)}')
         return filler_row.filler_id, filler_row.filler_name, filler.v, filler_row.filler_v, filler.price
     def __str__(self) -> str:
         return f'main: {self.main_filters}\nkitchen: {self.kitchen_filters}\nfillers: {self.fillers}\nextra: {self.extra_equipmets}'
@@ -72,7 +73,7 @@ class CalculataroView(View):
 
             logic = Logic()
             print(form_data)
-            if form_data['action'] == 'house_form' or form_data['action'] == 'country_form':
+            if form_data['action'] == 'house_form' or form_data['action'] == 'country_house_form':
                 ids_offer = logic.get_offers_ids(
                     water_hard=form_data['water_hardness'],
                     water_ferum=form_data['water_iron'],
@@ -182,4 +183,4 @@ def calc_page(request):
             else:
                 out = OutputForm(request.POST)
             context['output_form']= out
-    return render(request, 'calc_app/calc_page.html',context=context)
+    return render(request, 'calc_app/prof_page.html',context=context)

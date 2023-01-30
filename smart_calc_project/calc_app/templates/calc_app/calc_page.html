@@ -281,9 +281,9 @@
           {% if output_form.main_filters_tr|length > 0%}
           {%for main_f in output_form.main_filters_tr%}
           <tr>
-            <td>{{main_f.name_input}}</td>
-            <td>{{main_f.price_input}}</td>
-            <td>{{main_f.num}}</td>
+            <td class="table_element">{{main_f.name_input}}</td>
+            <td class="table_element">{{main_f.price_input}}</td>
+            <td class="table_element">{{main_f.num}}</td>
           </tr>
           {% endfor%}
           {% endif %}
@@ -297,14 +297,15 @@
           {% endfor %}
           {% endif %}
           </table>
+          
+          {% if output_form.fillers_tr|length > 0%}
           <table>
             <tr>
-              <td>название</td>
-              <td>цена</td>
-              <td>необходимый объем</td>
-              <td>объем на складе(литров/кг)</td>
+              <td class="table_element">название</td>
+              <td class="table_element">цена</td>
+              <td class="table_element">необходимый объем</td>
+              <td class="table_element">объем на складе(литров/кг)</td>
             </tr>
-          {% if output_form.fillers_tr|length > 0%}
           {% for filler in output_form.fillers_tr%}
           
           <tr>

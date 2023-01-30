@@ -5,21 +5,16 @@ class NameForm(forms.Form):
     your_name = forms.CharField(label='Your name', max_length=100)
 
 class WaterForm(forms.Form):
-    water_hardness = forms.FloatField(min_value=0, max_value=9, step_size=0.1, initial=0.0)
-    water_iron = forms.FloatField(min_value=0, max_value=9, step_size=0.1, initial=0.0)
-    water_turbidity = forms.FloatField(min_value=0, max_value=9, step_size=0.1, initial=0.0)
-    water_PH = forms.FloatField(min_value=0, max_value=9, step_size=0.1, initial=0.0)
-    water_oxid = forms.FloatField(min_value=0, max_value=9, step_size=0.1, initial=0.0)
-    water_nitrat = forms.FloatField(min_value=0, max_value=9, step_size=0.1, initial=0.0)
-    water_salt = forms.FloatField(min_value=0, max_value=9, step_size=0.1, initial=0.0)
-    water_nitrit = forms.FloatField(min_value=0, max_value=9, step_size=0.1, initial=0.0)
-    water_color = forms.FloatField(min_value=0, max_value=9, step_size=0.1, initial=0.0)
-    water_smell = forms.NullBooleanField(widget=forms.RadioSelect(
-        choices=[
-            (True, 'Да'),
-            (False, 'Нет'),
-        ]
-    ), initial = False)
+    water_hardness = forms.ChoiceField(choices=[(0, 'до 3'),(3, 'до 8'),(8, 'до 15'), (20, 'от 15')],initial=False)
+    water_iron = forms.ChoiceField(choices=[(0, 'до 0,3'), (0.3, 'до 0,9'), (0.9, 'до 8'), (8, 'от 8')],initial=False)
+    water_turbidity = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
+    water_PH = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
+    water_oxid = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
+    water_nitrat = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
+    water_salt = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
+    water_nitrit = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
+    water_color = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
+    water_smell = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
 
 class FlatForm(WaterForm):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='flat_form')
