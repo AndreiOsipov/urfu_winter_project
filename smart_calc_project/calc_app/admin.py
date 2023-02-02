@@ -16,8 +16,11 @@ from .models  import (
     FlatHouseNoAnalysisEquipment
 )
 
-# Register your models here.
-admin.site.register(EquipmentType)
+
+class MyAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(EquipmentType, MyAdmin)
 admin.site.register(Equipment)
 
 admin.site.register(BaseHouseWithWaterAnalysis)
