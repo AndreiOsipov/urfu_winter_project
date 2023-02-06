@@ -6,5 +6,5 @@ app_name  = 'calc_app'
 #сделать так, чтобы url с кадой формы передавался с уникальным аргументом <>
 
 urlpatterns = [
-    path('', views.CalculataroView.as_view(), name='calc_page'),
+    path('', views.CalculatorView.as_view(), name='calc_page'),
 ]

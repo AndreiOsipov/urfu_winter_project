@@ -1,5 +1,14 @@
+import os
+from django.core.exceptions import ValidationError
+
 from django import forms
 from calc_app.models import Equipment
+
+def excle_extention_validate(file):    
+    ext = os.path.splitext(file.name)[1]
+    if ext not in ['.xls', '.xlsx']:
+        raise ValidationError(message='не тот формат')
+    
 
 class NameForm(forms.Form):
     your_name = forms.CharField(label='Your name', max_length=100)
@@ -26,6 +35,9 @@ class CountryHouseForm(WaterForm):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='country_house_form')
     people_number = forms.IntegerField(min_value=1, initial=1)
 
+class ExcelForm(forms.Form):
+    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='excel_form')
+    input_excel = forms.FileField(label='обновить данные excel-файлом', validators=[excle_extention_validate])
 
 class FilterTr:
     '''
@@ -39,7 +51,6 @@ class FilterTr:
     def update(self, data):
         self.name_input = forms.CharField(max_length=20, initial=data)
         self.price_input = forms.DecimalField(initial=Equipment.objects.get(name=data).price)
-        #тут придется работать с сессиями
         
 class FillerTr:
     '''
