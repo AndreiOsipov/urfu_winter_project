@@ -4,18 +4,18 @@ from django.db.models.functions import Length
 models.CharField.register_lookup(Length)
 
 class EquipmentType(models.Model):
-    type_name = models.CharField(max_length=50, primary_key=True)
-    type_discount = models.FloatField()
+    type_name = models.CharField(max_length=50, primary_key=True, verbose_name='тип оборудования')
+    type_discount = models.FloatField(verbose_name='скидка')
 
     class Meta:
         verbose_name = 'Тип оборудования'
         verbose_name_plural = 'Типы оборудования'
-        
+
 class Equipment(models.Model):
-    equipment_name = models.CharField(max_length=40)
-    equipment_price = models.FloatField()
+    equipment_name = models.CharField(max_length=40, verbose_name='название')
+    equipment_price = models.FloatField(verbose_name='цена')
     equipment_id = models.CharField(max_length=7)
-    equipment_type = models.ForeignKey(EquipmentType, on_delete=models.CASCADE)
+    equipment_type = models.ForeignKey(EquipmentType, on_delete=models.CASCADE,verbose_name='Тип оборудования')
 
     class Meta:
         verbose_name = 'Оборудование'
@@ -24,7 +24,9 @@ class Equipment(models.Model):
             models.CheckConstraint(name='equipment_id_like', check=models.Q(equipment_id__length__gte=7)),
             models.CheckConstraint(name='price_gte_zero', check=models.Q(equipment_price__gte=0)),            
         ]
-
+    def __str__(self) -> str:
+        return self.equipment_name
+        
 class AbstractHouse(models.Model):
    
     fiedls_names_for_str = []
@@ -62,8 +64,8 @@ class FlatHouseWithWaterAnalysis(AbstractHouse):
         'water_mpc',
     ]
 
-    water_hardness = models.IntegerField(choices=[(0, 'до 3'), (3, 'до 7'), (7, 'от 7')])
-    water_ferum = models.FloatField(choices=[(0, 'до 0,6'),(0.6, 'до 0,9'), (0.9, 'от 0,9')])
+    water_hardness = models.IntegerField(choices=[(0, 'до 3'), (3, 'до 7'), (7, 'от 7')], verbose_name='жесткость')
+    water_ferum = models.FloatField(choices=[(0, 'до 0,6'),(0.6, 'до 0,9'), (0.9, 'от 0,9')], verbose_name='железо')
     water_mpc = models.BooleanField()
     
     class Meta:
@@ -137,6 +139,7 @@ class BaseHouseWithWaterAnalysis(AbstractHouse):
     verbose_name='железо')
     water_mpc = models.BooleanField(verbose_name='другие примеси')
     water_smell = models.BooleanField('запах')
+
     class Meta:
         verbose_name = 'Коттедж, есть анализ'
         verbose_name_plural = verbose_name
@@ -162,7 +165,12 @@ class CountryHouseWithoutWaterAnalysis(AbstractHouse):
     water_hardness = models.BooleanField(verbose_name='жесткость')
     water_ferum = models.BooleanField(verbose_name='железо')
     water_smell = models.BooleanField(verbose_name='запах')
-
+    fiedls_names_for_str = [
+        'water_v_used_per_hour',
+        'water_hardness',
+        'water_ferum',
+        'water_smell',
+    ]
     class Meta:
         verbose_name = 'Дача, нет анализа'
         verbose_name_plural = verbose_name
@@ -179,14 +187,21 @@ class BaseHouseWithoutWaterAnalysis(AbstractHouse):
     water_ferum = models.BooleanField(verbose_name='железо')
     water_smell = models.BooleanField(verbose_name='запах')
 
+    fiedls_names_for_str = [
+        'water_v_used_per_hour',
+        'water_hardness',
+        'water_ferum',
+        'water_smell',
+    ]
+
     class Meta:
         verbose_name = 'Коттедж, нет анализа'
         verbose_name_plural = verbose_name
         unique_together = ['water_v_used_per_hour', 'water_hardness', 'water_ferum', 'water_smell']
 
 class BaseHouseAnalysisEquimpent(models.Model):
-    input_data = models.ForeignKey(BaseHouseWithWaterAnalysis, on_delete=models.CASCADE)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)
+    input_data = models.ForeignKey(BaseHouseWithWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
     
     class Meta:
         verbose_name = 'Коттедж --  борудование (есть анализ)'
@@ -195,8 +210,8 @@ class BaseHouseAnalysisEquimpent(models.Model):
 
 
 class BaseHouseNoAnalysisEquipment(models.Model):
-    input_data = models.ForeignKey(BaseHouseWithoutWaterAnalysis, on_delete=models.CASCADE)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)
+    input_data = models.ForeignKey(BaseHouseWithoutWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
 
     class Meta:
         verbose_name = 'Коттедж --  борудование (нет анализа)'
@@ -205,8 +220,8 @@ class BaseHouseNoAnalysisEquipment(models.Model):
 
 class CoutryHouseAnalysisEquipment(models.Model):
     
-    input_data = models.ForeignKey(CountryHouseWithWaterAnalysis, on_delete=models.CASCADE)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)
+    input_data = models.ForeignKey(CountryHouseWithWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
 
     class Meta:
         verbose_name = 'Дача --  борудование (есть анализ)'
@@ -215,8 +230,8 @@ class CoutryHouseAnalysisEquipment(models.Model):
 
 
 class CountryHouseNoAnalysisEquipment(models.Model):
-    input_data = models.ForeignKey(CountryHouseWithoutWaterAnalysis, on_delete=models.CASCADE)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)
+    input_data = models.ForeignKey(CountryHouseWithoutWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
 
     class Meta:
         verbose_name = 'Дача --  борудование (нет анализа)'
@@ -227,8 +242,8 @@ class CountryHouseNoAnalysisEquipment(models.Model):
 
 class FlatHouseAnalysisEquipment(models.Model):
     
-    input_data = models.ForeignKey(FlatHouseWithWaterAnalysis, on_delete=models.CASCADE)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)
+    input_data = models.ForeignKey(FlatHouseWithWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
 
     class Meta:
         verbose_name = 'Квартира --  борудование (есть анализ)'
@@ -237,8 +252,8 @@ class FlatHouseAnalysisEquipment(models.Model):
 
 
 class FlatHouseNoAnalysisEquipment(models.Model):
-    inout_data = models.ForeignKey(FlatHouseWithoutWaterAnalysis, on_delete=models.CASCADE)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)
+    inout_data = models.ForeignKey(FlatHouseWithoutWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
 
     class Meta:
         verbose_name = 'Капртира --  борудование (нет анализа)'
