@@ -1,19 +1,21 @@
 import os
 from django.core.exceptions import ValidationError
-
 from django import forms
 from calc_app.models import Equipment
 
-def excle_extention_validate(file):    
-    ext = os.path.splitext(file.name)[1]
-    if ext not in ['.xls', '.xlsx']:
-        raise ValidationError(message='не тот формат')
-    
+class ExcelFileInputFiled(forms.FileField):
+    def validate(self, file):
+        """Check if file format is not sucess."""
+        super().validate(file)
+        ext = os.path.splitext(file.name)[1]
+        if ext not in ['.xls', '.xlsx']:
+            self.error_messages = 'wrong format'
+            raise ValidationError(message = 'wrong format',code='format_error')
+            
+class AbstractWaterForm(forms.Form):
+    water_smell = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
 
-class NameForm(forms.Form):
-    your_name = forms.CharField(label='Your name', max_length=100)
-
-class WaterForm(forms.Form):
+class NumberWaterForm(AbstractWaterForm):
     water_hardness = forms.ChoiceField(choices=[(0, 'до 3'),(3, 'до 8'),(8, 'до 15'), (20, 'от 15')],initial=False)
     water_iron = forms.ChoiceField(choices=[(0, 'до 0,3'), (0.3, 'до 0,9'), (0.9, 'до 8'), (8, 'от 8')],initial=False)
     water_turbidity = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
@@ -23,21 +25,36 @@ class WaterForm(forms.Form):
     water_salt = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
     water_nitrit = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
     water_color = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
-    water_smell = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
 
-class FlatForm(WaterForm):
+class BoolWaterForm(AbstractWaterForm):
+    water_hardness = forms.BooleanField()
+    water_iron = forms.BooleanField()
+    
+class NumberFlatForm(NumberWaterForm):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='flat_form')
-class HouseForm(WaterForm):
+    
+class NumberHouseForm(NumberWaterForm):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='house_form')
     people_number = forms.IntegerField(min_value=1, initial=1)
 
-class CountryHouseForm(WaterForm):
+class NumberCountryHouseForm(NumberWaterForm):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='country_house_form')
     people_number = forms.IntegerField(min_value=1, initial=1)
 
+class BoolFlatForm(BoolWaterForm):
+    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='bool_flat_form')
+
+class BoolCountryHouseForm(BoolWaterForm):
+    people_number = forms.IntegerField(min_value=1, initial=1)
+    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='bool_country_house_form')
+
+class BoolBaseHouseForm(BoolWaterForm):
+    people_number = forms.IntegerField(min_value=1, initial=1)
+    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='bool_base_house_form')
+
 class ExcelForm(forms.Form):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='excel_form')
-    input_excel = forms.FileField(label='обновить данные excel-файлом', validators=[excle_extention_validate])
+    input_excel = ExcelFileInputFiled(label='обновить данные excel-файлом')
 
 class FilterTr:
     '''

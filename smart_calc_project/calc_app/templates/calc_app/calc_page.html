@@ -276,6 +276,12 @@
               <p>
                 {{ excel_form.input_excel }}
                 <input type="submit">
+                {% if excel_form.errors %}
+                <p>непринятые данные</p>
+                <p>
+                  {{ excel_form.errors|length }}
+                </p>
+                {% endif %}
               </p>
             </form>
           </span>
@@ -283,12 +289,13 @@
         </section>
         <section class="output-section">
           <table>
-            <tr>
-              <td>название</td>
-              <td>цена</td>
-              <td>Количество на складе</td>
-            </tr>
+            
           {% if output_form.main_filters_tr|length > 0%}
+          <tr>
+            <td>название</td>
+            <td>цена</td>
+            <td>Количество на складе</td>
+          </tr>
           {%for main_f in output_form.main_filters_tr%}
           <tr>
             <td class="table_element">{{main_f.name_input}}</td>
@@ -325,7 +332,7 @@
             <td class="table_element">{{ filler.necessary_v }}</td>
             <td class="table_element">{{ filler.stock_v }}</td>
           </tr>
-          {% endfor %} 
+          {% endfor %}
           {% endif %}
         </table>
         </section>

@@ -7,7 +7,7 @@ class ExcelEquipment:
         self.name = str(name)
         self.barcode = str(barcode)
         self.price = float(price)
-        self.equipment_type = str(equipment_type)
+        self.type = str(equipment_type)
     
     def __str__(self) -> str:
         return str(self.id)
