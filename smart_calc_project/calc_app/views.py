@@ -20,20 +20,28 @@ class CalculatorView(View):
     flat_form = NumberFlatForm()
     country_house_form = NumberCountryHouseForm()
     house_form = NumberHouseForm()
+    bool_flat_form = BoolFlatForm()
+    bool_country_house_form = BoolCountryHouseForm()
+    bool_house_form = BoolBaseHouseForm()
+
     excel_form = ExcelForm()
 
+    #TODO make the  output form
     main_filters_list = []
     kitchen_filters_list = []
     fillers_list = []
-    #убрать необходимость отправлять в шаблон пустые списки
+    
     context = {
         'flat_form': flat_form,
-        'country_house_form': country_house_form,
+        'country_form': country_house_form,
         'house_form': house_form,
+        'bool_flat_form': bool_flat_form,
+        'bool_country_form':bool_country_house_form,
+        'bool_house_form':bool_house_form,
+        'excel_form': excel_form,
         'main_filters': main_filters_list,
         'kitchen_filters': kitchen_filters_list, 
         'fillers': fillers_list,
-        'excel_form': excel_form,
         'not_saved_equipment': [],
     }
 
@@ -55,12 +63,14 @@ class CalculatorView(View):
             return ExcelForm(post_data, file_data)
     
     def get_model(self,name_form, form_data):
+
         if name_form == 'flat_form':
             ...
         elif name_form == 'country_house_form':
             ...
         elif name_form == 'house_form':
             ...
+        elif name_form == 
 
     def get(self, request):
         return render(request, template_name=self.template_name, context=self.context)

@@ -13,18 +13,19 @@ class ExcelFileInputFiled(forms.FileField):
             raise ValidationError(message = 'wrong format',code='format_error')
             
 class AbstractWaterForm(forms.Form):
-    water_smell = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
+    water_smell = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False,label='запах')
+    field_order = ['people_number',]
 
 class NumberWaterForm(AbstractWaterForm):
-    water_hardness = forms.ChoiceField(choices=[(0, 'до 3'),(3, 'до 8'),(8, 'до 15'), (20, 'от 15')],initial=False)
-    water_iron = forms.ChoiceField(choices=[(0, 'до 0,3'), (0.3, 'до 0,9'), (0.9, 'до 8'), (8, 'от 8')],initial=False)
-    water_turbidity = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
-    water_PH = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
-    water_oxid = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
-    water_nitrat = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
-    water_salt = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
-    water_nitrit = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
-    water_color = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False)
+    water_hardness = forms.ChoiceField(choices=[(0, 'до 3'),(3, 'до 8'),(8, 'до 15'), (20, 'от 15')],initial=False,label='жесткость')
+    water_iron = forms.ChoiceField(choices=[(0, 'до 0,3'), (0.3, 'до 0,9'), (0.9, 'до 8'), (8, 'от 8')],initial=False,label='железо')
+    water_turbidity = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False,label='мутность')
+    water_PH = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False,label='Ph')
+    water_oxid = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False,label='оксиды')
+    water_nitrat = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False,label='нитраты')
+    water_salt = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False,label='солесодержание')
+    water_nitrit = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False,label='нитриты')
+    water_color = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'да'), (False, 'Нет')]),initial=False,label='цветность')
 
 class BoolWaterForm(AbstractWaterForm):
     water_hardness = forms.BooleanField()
@@ -35,27 +36,30 @@ class NumberFlatForm(NumberWaterForm):
     
 class NumberHouseForm(NumberWaterForm):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='house_form')
-    people_number = forms.IntegerField(min_value=1, initial=1)
+    people_number = forms.IntegerField(min_value=1, initial=1, label='количество человек')
 
 class NumberCountryHouseForm(NumberWaterForm):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='country_house_form')
-    people_number = forms.IntegerField(min_value=1, initial=1)
+    people_number = forms.IntegerField(min_value=1, initial=1, label='количество человек')
+
 
 class BoolFlatForm(BoolWaterForm):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='bool_flat_form')
-
+    
 class BoolCountryHouseForm(BoolWaterForm):
-    people_number = forms.IntegerField(min_value=1, initial=1)
+    people_number = forms.IntegerField(min_value=1, initial=1, label='количество человек')
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='bool_country_house_form')
+
 
 class BoolBaseHouseForm(BoolWaterForm):
     people_number = forms.IntegerField(min_value=1, initial=1)
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='bool_base_house_form')
 
+
 class ExcelForm(forms.Form):
     action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='excel_form')
     input_excel = ExcelFileInputFiled(label='обновить данные excel-файлом')
-
+    
 class FilterTr:
     '''
     представляет поля формы фильтра для одной строки таблицы

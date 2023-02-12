@@ -1,341 +1,147 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
+<head>
+    <meta charset="UTF-8">
     {% load static %}
-     <img src="{% static 'calc_app/emblem.jpg' %}">
-     <link href="{% static 'calc_app/right.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'calc_app/right.css' %}">
     <title>Барьер</title>
-  </head>
-  <body>
+</head>
+<body>
+    <header></header>
     <main class="main-content">
-      <h2>Автоматизированный подбор оборудования</h2>
-      <section class="objects">
-        <ul class="cards">
-          <li class="card">
-            <p class="result">
-              <div id="click-expand1"></div>
-              <div class="wrap-expand-table"><a href="#close"><h3 class="card-title">Дом</h3></a><a href="#click-expand1">Дом</a>
-                <table class="table">
-
-                  <form action="{%url 'calc_app:calc_page' %}" method="post">
-                    {% csrf_token %}
-                  <tbody>
-                    <tr>
-                      <th><p class="card-features-title"><h4>Характеристики:</h4></p></th>
-                    </tr>
-                      <ul class="card-features">
-                  <tr>
-                    <td><li>Количество человек</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ house_form.people_number}}</td>
-                    <td>{{house_form.action}}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Жесткость 0Ж</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ house_form.water_hardness }}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Железо</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ house_form.water_iron }}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Мутность</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ house_form.water_turbidity }}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Ph</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ flat_form.water_PH}}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Окисляемость</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ house_form.water_oxid }}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Нитраты</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ house_form.water_nitrat }}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Общее солесодержание</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ house_form.water_salt }}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Нитриты</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ house_form.water_nitrit }}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Цветность</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{house_form.water_color}}</td>
-                  </tr>
-                  <tr>
-                    <td><li>Есть запах?</li></td>
-                  </tr>
-                  <tr>
-                    <td>{{ house_form.water_smell }}</td>
-                  </tr>
-                  <tr>
-                    <td><input type="submit", value="Поиск"></td>
-                  </tr>
-                      </ul>
-                  </tbody>
-                </form>
-                </table>  
-              </div>
-            </span>
-        </p>
-              <div id="click-expand2"></div>
-                  <div class="wrap-expand-table"><a href="#close"><h3 class="card-title">Квартира</h3></a><a href="#click-expand2">Квартира</a>
-                    <table class="table">
-                      <form action="{%url 'calc_app:calc_page' %}" method="post">
-                        {% csrf_token %}
-                      <tbody>
-                        <tr>
-                          <th><p class="card-features-title"><h4>Характеристики:</h4></p></th>
-                        </tr>
-                          <ul class="card-features">
-                      <tr>
-                        <!--
-                        <td><li>Количество человек</li></td>
-                      </tr>
-                      <tr>
-                        <td>{{ flat }}</td>
-                      </tr>
-                      <tr>-->
-                        <td><li>Жесткость</li></td>
-                        <td>{{flat_form.action}}</td>
-                      </tr>
-                      <tr>
-                        <td>{{ flat_form.water_hardness }}</td>
-                      </tr>
-                      <tr>
-                        <td><li>Железо</li></td>
-                      </tr>
-                      <tr>
-                        <td>{{ flat_form.water_iron }}</td>
-                      </tr>
-                      <tr>
-                        <td><li>Мутность</li></td>
-                      </tr>
-                      <tr>
-                        <td>{{ flat_form.water_turbidity }}</td>
-                      </tr>
-                      <tr>
-                        <td><li>Ph</li></td>
-                      </tr>
-                      <tr>
-                        <td>{{ flat_form.water_PH }}</td>
-                      </tr>
-                      <tr>
-                        <td><li>Окисляемость</li></td>
-                      </tr>
-                      <tr>
-                        <td>{{ flat_form.water_oxid }}</td>
-                      </tr>
-                      <tr>
-                        <td><li>Нитраты</li></td>
-                      </tr>
-                      <tr>
-                        <td>{{ flat_form.water_nitrat }}</td>
-                      </tr>
-                      <tr>
-                        <td><li>Общее солесодержание</li></td>
-                      </tr>
-                      <tr>
-                        <td>{{ flat_form.water_salt }}</td>
-                      </tr>
-                      <tr>
-                        <td><li>Нитриты</li></td>
-                      </tr>
-                      <tr>
-                        <td>{{ flat_form.water_nitrit }}</td>
-                      </tr>
-                      <tr>
-                        <td><li>Цветность</li></td>
-                      </tr>
-                      <tr>
-                        <td> {{ flat_form.water_color }} </td>
-                      </tr>
-                      <tr>
-                        <td><input type="submit", value="Поиск"></td>
-                      </tr>
-                          </ul>
-                      </tbody>
-                      </form>
-                    </table>  
-                  </div>
-                </span>
-            </p>
-            <div id="click-expand3"></div>
-            <div class="wrap-expand-table"><a href="#close"><h3 class="card-title">Дача</h3></a><a href="#click-expand3">Дача</a>
-              <table class="table">
-                <form action="{%url 'calc_app:calc_page' %}" method="post">
-                  {% csrf_token %}
-                <tbody>
-                  <tr>
-                    <th><p class="card-features-title"><h4>Характеристики:</h4></p></th>
-                  </tr>
-                    <ul class="card-features">
-                <tr>
-                  <td><li>Количество человек</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.people_number }}</td>
-                  <td>{{country_house_form.action}}</td>
-                </tr>
-                <tr>
-                  <td><li>Жесткость 0Ж</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_hardness }}</td>
-                </tr>
-                <tr>
-                  <td><li>Железо</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_iron }}</td>
-                </tr>
-                <tr>
-                  <td><li>Мутность</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_turbidity }}</td>
-                </tr>
-                <tr>
-                  <td><li>Ph</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_PH }}</td>
-                </tr>
-                <tr>
-                  <td><li>Окисляемость</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_oxid }}</td>
-                </tr>
-                <tr>
-                  <td><li>Нитраты</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_nitrat }}</td>
-                </tr>
-                <tr>
-                  <td><li>Общее солесодержание</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_salt }}</td>
-                </tr>
-                <tr>
-                  <td><li>Нитриты</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_nitrit }}</td>
-                </tr>
-                <tr>
-                  <td><li>Цветность</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_color }}</td>
-                </tr>
-                <tr>
-                  <td><li>Есть запах?</li></td>
-                </tr>
-                <tr>
-                  <td>{{ country_house_form.water_smell }}</td>
-                </tr>
-                <tr>
-                  <td><input type="submit", value="Поиск"></td>
-                </tr>
+        <h2>Автоматизированный подбор оборудования</h2>
+        <ul class = "input-water-data">
+            <li>
+                <section class="house-input-cards">
+                    <ul class="panels-controllers">
+                        <li><a href="#close">закрыть</a></li>
+                        <li><a href="#num_base_house">есть анализ</a></li>
+                        <li><a href="#bool_base_house">нет анализа</a></li>
                     </ul>
-                </tbody>
-                </form>
-              </table>  
-            </div>
-            <form enctype="multipart/form-data" action="{%url 'calc_app:calc_page' %}" method="post">
-              {% csrf_token %}
-              <p>
-                {{ excel_form.action }}
-              </p>
-              <p>
-                {{ excel_form.input_excel }}
-                <input type="submit">
-                {% if excel_form.errors %}
-                <p>непринятые данные</p>
+
+                    <form action="{%url 'calc_app:calc_page' %}" id="num_base_house">
+                        <p class="form-title">Коттедж, есть анализ</p>
+                        {% csrf_token %}
+                        <table>
+                            <tr><td>{{house_form.action}}</td></tr>
+                            {% for form_filed in house_form %}
+                            {% if form_filed != house_form.action %}
+                                <tr><td>{{ form_filed.label }}</td></tr>
+                                <tr><td>{{ form_filed }}</td></tr>
+                            {% endif %}
+                            {% endfor %}
+                    </table>
+                    <input type="submit">
+                    </form>
+                    <form action="{%url 'calc_app:calc_page' %}" id="bool_base_house">
+                        <p class="form-title">Коттедж, нет анализа</p>
+                        {% csrf_token %}
+                        <table>
+                            <tr><td>{{ bool_house_form.action }}</td></tr>
+                            {% for form_filed in bool_base_house %}
+                            {% if form_field != bool_base_house.action %}
+                            <tr><td>{{ form_field.label }}</td></tr>
+                            <tr><td>{{ form_field }}</td></tr>
+                            {% endif %}
+                            {% endfor %}
+                        </table>
+                        <input type="submit">
+                    </form>
+                </section>
+            </li>
+            <li>
+                <section class="flat-input-cards">
+                    <ul class="panels-controllers">
+                        <li><a href="#close">закрыть</a></li>
+                        <li><a href="#num_flat_house">есть анализ</a></li>
+                        <li><a href="#bool_flat_house">нет анализа</a></li>
+                    </ul>
+                    <form action="{%url 'calc_app:calc_page' %}" id="num_flat_house">
+                        <p class="form-title">Квартира, есть анализ</p>
+                        {% csrf_token %}
+                        <table>
+                            <td>{{flat_form.action}}</td>
+                                </tr>
+                                {% for form_field in flat_form %}
+                                {% if form_field != flat_form.action %}
+                                <tr><td>{{ form_field.label }}</td></tr>
+                                <tr><td>{{ form_field }}</td></tr>
+                                {% endif %}
+                                {% endfor %}
+                        </table>
+                        <input type="submit">
+                    </form>
+                    <form action="{%url 'calc_app:calc_page' %}" id="bool_flat_house">
+                        <p class="form-title">КвартираБ нет анализа</p>
+                        {% csrf_token %}
+                        <table>
+                            <tr><td>{{bool_flat_form.action}}</td></tr>
+                            {% for form_field in bool_flat_form %}
+                            {% if form_field != bool_flat_form.action %}
+                            <tr><td>{{ form_filed.label }}</td></tr>
+                            <tr><td>{{ form_field }}</td></tr>
+                            {% endif %}
+                            {% endfor %}
+                        </table>
+                        <input type="submit">
+                    </form>
+                </section>
+            </li>
+            <li>
+                <section class="country-input-cards">
+                    <ul class = "panels-controllers">
+                        <li><a href="#close">закрыть</a></li>
+                        <li><a href="#num_country_house">есть анализ</a></li>
+                        <li><a href="#bool_country_house">нет анализа</a></li>
+                    </ul>                        
+                    <form action="{%url 'calc_app:calc_page' %}" id="num_country_house">
+                        <p class="form-title">Дача, есть анализ</p>
+                        {% csrf_token %}
+                        <table>
+                            <tr><td>{{country_form.action}}</td></tr>
+                                {% for form_field in country_form %}
+                                {% if form_field != country_form.action %}
+                                <tr><td>{{ form_field.label }}</td></tr>
+                                <tr><td>{{ form_field }}</td></tr>
+                                {% endif %}
+                                {% endfor %}
+                        </table>
+                        <input type="submit">
+                    </form>
+                    <form action="{%url 'calc_app:calc_page' %}" id="bool_country_house">
+                        <p class="form-title">Дача, нет анализа</p>
+                        {% csrf_token %}
+                        <table>
+                        <tr><td>{{ bool_country_form.action }}</td></tr>
+                        {% for form_field in bool_country_form %}
+                        {% if form_field != bool_country_form.action %}
+                        <tr><td>{{ forn_field.label }}</td></tr>
+                        <tr><td>{{ form_field }}</td></tr>
+                        {% endif %}
+                        {% endfor %}
+                    </table>
+                        <input type="submit">
+                    </form>
+                </section>
+            </li>
+        </ul>
+        
+        <section class="excel-input">
+            <form action="{%url 'calc_app:calc_page' %}">
+                <p class="form-title">обновление цен</p>
+                {% csrf_token %}
                 <p>
-                  {{ excel_form.errors|length }}
+                    {{ excel_form.action }}
                 </p>
-                {% endif %}
-              </p>
+                <p>
+                    {{ excel_form.input_excel }}
+                </p>
+                <input type="submit">
             </form>
-          </span>
-          </p>
         </section>
-        <section class="output-section">
-          <table>
-            
-          {% if output_form.main_filters_tr|length > 0%}
-          <tr>
-            <td>название</td>
-            <td>цена</td>
-            <td>Количество на складе</td>
-          </tr>
-          {%for main_f in output_form.main_filters_tr%}
-          <tr>
-            <td class="table_element">{{main_f.name_input}}</td>
-            <td class="table_element">{{main_f.price_input}}</td>
-            <td class="table_element">{{main_f.num}}</td>
-          </tr>
-          {% endfor%}
-          {% endif %}
-          {% if output_form.kitchen_filters_tr|length > 0%}
-          {% for kitchen_f in output_form.kitchen_filters_tr %}
-          <tr>
-            <td class="table_element">{{kitchen_f.name_input}}</td>
-            <td class="table_element">{{kitchen_f.price_input}}</td>
-            <td class="table_element">{{kitchen_f.num}}</td>
-          </tr>
-          {% endfor %}
-          {% endif %}
-          </table>
-          
-          {% if output_form.fillers_tr|length > 0%}
-          <table>
-            <tr>
-              <td class="table_element">название</td>
-              <td class="table_element">цена</td>
-              <td class="table_element">необходимый объем</td>
-              <td class="table_element">объем на складе(литров/кг)</td>
-            </tr>
-          {% for filler in output_form.fillers_tr%}
-          
-          <tr>
-            
-            <td class="table_element">{{ filler.name }}</td>
-            <td class="table_element">{{ filler.price }}</td>
-            <td class="table_element">{{ filler.necessary_v }}</td>
-            <td class="table_element">{{ filler.stock_v }}</td>
-          </tr>
-          {% endfor %}
-          {% endif %}
-        </table>
+        <section class = "output">
         </section>
-      </main>
-  </body>
+    </main>
+    <footer></footer>
+</body>
 </html>

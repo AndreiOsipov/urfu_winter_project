@@ -7,14 +7,9 @@ body {
     color: #515076;
   }
   
-  [id^="click-expand"] {
-    position: fixed; 
-    }
-    [id^="click-expand"]:target + .wrap-expand-table a[href^="#click-expand"],
-    [id^="click-expand"]:not(:target) + .wrap-expand-table tbody tr:nth-of-type(n),
-    [id^="click-expand"]:not(:target) + .wrap-expand-table a[href="#close"] {
+  ul.input-water-data form:not(:target){
     display: none;
-    }
+  }
   
   .main-content {
     /*width: 1110px;
@@ -27,7 +22,7 @@ body {
     left: 5%;
   }
   
-  .objects {
+  .input-water-data {
     width: 30%;
     padding-top: 20px;
     padding-bottom: 12px;
@@ -35,7 +30,7 @@ body {
     background-repeat: no-repeat;
   }
   
-  .objects h2 {
+  /* .objects h2 {
     margin: 0;
     margin-bottom: 20px;
   
@@ -43,8 +38,9 @@ body {
     line-height: 20px;
     font-weight: normal;
     text-align: right;
-  }
-  .objects h3 {
+  } */
+
+  h6 {
     margin: 0;
     margin-bottom: 0px;
   
@@ -54,7 +50,7 @@ body {
     color: blue;
     
   }
-  .cards {
+  .input-card {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -66,22 +62,26 @@ body {
     margin-bottom: 60px;
   }
   
-  .card {
-    width: 290px;
+  .house-input-cards,
+  .flat-input-cards,
+  .country-input-cards {
+    
     padding: 25px;
   
     background-color: #F7F7FA;
   }
   
-  .card-title {
+  .form-title {
     font-size: 20px;
     line-height: 27px;
   }
   
-  .result {
+
+  
+  /* .result {
     font-size: 20px;
     line-height: 24px;
-  }
+  } где он используется?*/
   
   .card-result {
     font-weight: bold;
@@ -92,6 +92,10 @@ body {
     left: 50%;
     top: 0%;
   }
-.table_element{
+.output-table-element{
   text-align: center;
+}
+li 
+{
+  list-style-type: none;
 }
