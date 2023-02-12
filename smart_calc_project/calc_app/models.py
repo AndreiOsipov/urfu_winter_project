@@ -46,6 +46,9 @@ class AbstractHouse(models.Model):
         return str_field
 
     def __str__(self) -> str:
+        #прикрепить ->:<-
+        #
+        #
         str_r = ''
         for field_name in self.fiedls_names_for_str:
             field = self._meta.get_field(field_name)
@@ -64,7 +67,7 @@ class FlatHouseWithWaterAnalysis(AbstractHouse):
 
     water_hardness = models.IntegerField(choices=[(0, 'до 3'), (3, 'до 7'), (7, 'от 7')], verbose_name='жесткость')
     water_ferum = models.FloatField(choices=[(0, 'до 0,6'),(0.6, 'до 0,9'), (0.9, 'от 0,9')], verbose_name='железо')
-    water_mpc = models.BooleanField()
+    water_mpc = models.BooleanField(verbose_name='Другие примеси')
     equipments = models.ManyToManyField(Equipment, through='FlatHouseAnalysisEquipment')
 
     class Meta:
