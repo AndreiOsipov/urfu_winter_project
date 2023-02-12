@@ -70,7 +70,8 @@ class CalculatorView(View):
             ...
         elif name_form == 'house_form':
             ...
-        elif name_form == 
+        elif name_form == '':
+            ...
 
     def get(self, request):
         return render(request, template_name=self.template_name, context=self.context)

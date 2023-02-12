@@ -27,8 +27,7 @@ class Equipment(models.Model):
     def __str__(self) -> str:
         return self.equipment_name
         
-class AbstractHouse(models.Model):
-   
+class AbstractHouse(models.Model):   
     fiedls_names_for_str = []
 
     def get_str_field(self, field):
@@ -57,7 +56,6 @@ class AbstractHouse(models.Model):
         abstract = True
 
 class FlatHouseWithWaterAnalysis(AbstractHouse):
-    
     fiedls_names_for_str = [
         'water_hardness',
         'water_ferum',
@@ -67,7 +65,8 @@ class FlatHouseWithWaterAnalysis(AbstractHouse):
     water_hardness = models.IntegerField(choices=[(0, 'до 3'), (3, 'до 7'), (7, 'от 7')], verbose_name='жесткость')
     water_ferum = models.FloatField(choices=[(0, 'до 0,6'),(0.6, 'до 0,9'), (0.9, 'от 0,9')], verbose_name='железо')
     water_mpc = models.BooleanField()
-    
+    equipments = models.ManyToManyField(Equipment, through='FlatHouseAnalysisEquipment')
+
     class Meta:
         verbose_name = 'Квартира, есть анализ'
         verbose_name_plural = verbose_name
@@ -81,18 +80,18 @@ class CountryHouseWithWaterAnalysis(AbstractHouse):
         'water_mpc',
         'water_smell',
     ]
+    
     water_v_used_per_hour = models.FloatField(
         choices=[
             (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'), 
             (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)')],
         verbose_name='людей в доме')
     water_hardness = models.IntegerField(
-    choices=[
-        (0, 'до 3'),
-        (3, 'до 7'),
-        (7, 'от 7')],
+        choices=[
+            (0, 'до 3'),
+            (3, 'до 7'),
+            (7, 'от 7')],
         verbose_name='жесткость')
-    
     water_ferum = models.FloatField(
         choices=[
             (0, 'до 0,3'),
@@ -102,13 +101,13 @@ class CountryHouseWithWaterAnalysis(AbstractHouse):
     
     water_mpc = models.BooleanField(verbose_name='другие примеси')
     water_smell = models.BooleanField('запах')
+    equipments = models.ManyToManyField(Equipment, through='CoutryHouseAnalysisEquipment')
 
     class Meta:
         verbose_name = 'Дача, есть анализ'
         unique_together = ['water_v_used_per_hour','water_hardness','water_ferum','water_mpc','water_smell']
 
 class BaseHouseWithWaterAnalysis(AbstractHouse):
-    
     fiedls_names_for_str = [
         'water_v_used_per_hour',
         'water_hardness',
@@ -118,28 +117,27 @@ class BaseHouseWithWaterAnalysis(AbstractHouse):
     ]
 
     water_v_used_per_hour = models.FloatField(choices=[
-        (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'),
-        (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)'),
-        (2.0, '5 - 8 человек (до 2,5-х куб.м./ч)'),
-        (2.5, '8 и более человек(от 2,5 - х куб.м./ч)')],
-    verbose_name='людей в доме')
-   
+            (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'),
+            (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)'),
+            (2.0, '5 - 8 человек (до 2,5-х куб.м./ч)'),
+            (2.5, '8 и более человек(от 2,5 - х куб.м./ч)')],
+        verbose_name='людей в доме')
     water_hardness = models.IntegerField(choices=[
             (0, 'до 3'),
             (3, 'до 8'),
             (8, 'до 15'),
             (20, 'от 15')], 
         verbose_name='жесткость')
-
     water_ferum = models.FloatField(choices=[
-        (0, 'до 0,3'),
-        (0.3, 'до 0,9'),
-        (0.9, 'до 8'),
-        (8, 'от 8')],
-    verbose_name='железо')
+            (0, 'до 0,3'),
+            (0.3, 'до 0,9'),
+            (0.9, 'до 8'),
+            (8, 'от 8')],
+        verbose_name='железо')
     water_mpc = models.BooleanField(verbose_name='другие примеси')
     water_smell = models.BooleanField('запах')
-
+    equipments = models.ManyToManyField(Equipment, through='BaseHouseAnalysisEquimpent')
+    
     class Meta:
         verbose_name = 'Коттедж, есть анализ'
         verbose_name_plural = verbose_name
@@ -149,8 +147,10 @@ class FlatHouseWithoutWaterAnalysis(AbstractHouse):
     fiedls_names_for_str = [
         'water_hardness',
         'water_ferum']
+    
     water_hardness = models.BooleanField(verbose_name='жесткость',default=False)
-    water_ferum = models.BooleanField(verbose_name='железо')
+    water_ferum = models.BooleanField(verbose_name='железо')    
+    equipments = models.ManyToManyField(Equipment, through='FlatHouseNoAnalysisEquipment')
 
     class Meta:
         verbose_name = 'Квартира, нет анализа'
@@ -158,6 +158,13 @@ class FlatHouseWithoutWaterAnalysis(AbstractHouse):
         unique_together = ['water_hardness','water_ferum']
 
 class CountryHouseWithoutWaterAnalysis(AbstractHouse):
+    fiedls_names_for_str = [
+        'water_v_used_per_hour',
+        'water_hardness',
+        'water_ferum',
+        'water_smell',
+    ]
+    
     water_v_used_per_hour = models.FloatField(choices=[
             (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'),
             (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)')],
@@ -165,18 +172,21 @@ class CountryHouseWithoutWaterAnalysis(AbstractHouse):
     water_hardness = models.BooleanField(verbose_name='жесткость')
     water_ferum = models.BooleanField(verbose_name='железо')
     water_smell = models.BooleanField(verbose_name='запах')
-    fiedls_names_for_str = [
-        'water_v_used_per_hour',
-        'water_hardness',
-        'water_ferum',
-        'water_smell',
-    ]
+    equipments = models.ManyToManyField(Equipment, through='CountryHouseNoAnalysisEquipment')
+
     class Meta:
         verbose_name = 'Дача, нет анализа'
         verbose_name_plural = verbose_name
         unique_together = ['water_v_used_per_hour', 'water_hardness', 'water_ferum', 'water_smell']
 
 class BaseHouseWithoutWaterAnalysis(AbstractHouse):
+    fiedls_names_for_str = [
+        'water_v_used_per_hour',
+        'water_hardness',
+        'water_ferum',
+        'water_smell',
+    ]
+
     water_v_used_per_hour = models.FloatField(choices=[
         (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'), 
         (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)'), 
@@ -186,13 +196,7 @@ class BaseHouseWithoutWaterAnalysis(AbstractHouse):
     water_hardness = models.BooleanField(verbose_name='жесткость')
     water_ferum = models.BooleanField(verbose_name='железо')
     water_smell = models.BooleanField(verbose_name='запах')
-
-    fiedls_names_for_str = [
-        'water_v_used_per_hour',
-        'water_hardness',
-        'water_ferum',
-        'water_smell',
-    ]
+    equipments = models.ManyToManyField(Equipment, through='BaseHouseNoAnalysisEquipment')
 
     class Meta:
         verbose_name = 'Коттедж, нет анализа'
