@@ -19,7 +19,7 @@
                         <li><a href="#bool_base_house">нет анализа</a></li>
                     </ul>
 
-                    <form action="{%url 'calc_app:calc_page' %}" id="num_base_house">
+                    <form action="{%url 'calc_app:calc_page' %}" id="num_base_house" method="get">
                         <p class="form-title">Коттедж, есть анализ</p>
                         {% csrf_token %}
                         <table>
@@ -33,7 +33,7 @@
                     </table>
                     <input type="submit">
                     </form>
-                    <form action="{%url 'calc_app:calc_page' %}" id="bool_base_house">
+                    <form action="{%url 'calc_app:calc_page' %}" id="bool_base_house" method="get">
                         <p class="form-title">Коттедж, нет анализа</p>
                         {% csrf_token %}
                         <table>
@@ -56,7 +56,7 @@
                         <li><a href="#num_flat_house">есть анализ</a></li>
                         <li><a href="#bool_flat_house">нет анализа</a></li>
                     </ul>
-                    <form action="{%url 'calc_app:calc_page' %}" id="num_flat_house">
+                    <form action="{%url 'calc_app:calc_page' %}" id="num_flat_house" method="get">
                         <p class="form-title">Квартира, есть анализ</p>
                         {% csrf_token %}
                         <table>
@@ -71,7 +71,7 @@
                         </table>
                         <input type="submit">
                     </form>
-                    <form action="{%url 'calc_app:calc_page' %}" id="bool_flat_house">
+                    <form action="{%url 'calc_app:calc_page' %}" id="bool_flat_house" method="get">
                         <p class="form-title">КвартираБ нет анализа</p>
                         {% csrf_token %}
                         <table>
@@ -94,7 +94,7 @@
                         <li><a href="#num_country_house">есть анализ</a></li>
                         <li><a href="#bool_country_house">нет анализа</a></li>
                     </ul>                        
-                    <form action="{%url 'calc_app:calc_page' %}" id="num_country_house">
+                    <form action="{%url 'calc_app:calc_page' %}" id="num_country_house" method="get">
                         <p class="form-title">Дача, есть анализ</p>
                         {% csrf_token %}
                         <table>
@@ -108,7 +108,7 @@
                         </table>
                         <input type="submit">
                     </form>
-                    <form action="{%url 'calc_app:calc_page' %}" id="bool_country_house">
+                    <form action="{%url 'calc_app:calc_page' %}" id="bool_country_house" method="get">
                         <p class="form-title">Дача, нет анализа</p>
                         {% csrf_token %}
                         <table>
@@ -127,7 +127,7 @@
         </ul>
         
         <section class="excel-input">
-            <form action="{%url 'calc_app:calc_page' %}">
+            <form action="{%url 'calc_app:calc_page' %}" method="post">
                 <p class="form-title">обновление цен</p>
                 {% csrf_token %}
                 <p>

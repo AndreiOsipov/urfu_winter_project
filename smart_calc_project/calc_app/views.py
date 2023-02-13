@@ -5,8 +5,7 @@ from .forms import (NumberFlatForm,
     NumberHouseForm,
     BoolFlatForm,
     BoolCountryHouseForm,
-    BoolBaseHouseForm, 
-    OutputForm,
+    BoolBaseHouseForm,
     ExcelForm)
 
 from .parser import ExcelParser, ExcelEquipment
@@ -45,7 +44,8 @@ class CalculatorView(View):
         'not_saved_equipment': [],
     }
 
-    def __get_sumbitted_form(self, name_form, post_data, file_data=None):
+    def __get_sumbitted_form(self, name_form, post_data):
+        print(f'post data: {post_data}')
         if name_form == NumberFlatForm().fields['action'].initial:
             return NumberFlatForm(post_data)
         if name_form == NumberCountryHouseForm().fields['action'].initial:
@@ -58,28 +58,38 @@ class CalculatorView(View):
             return BoolCountryHouseForm(post_data)
         if name_form == BoolBaseHouseForm().fields['action'].initial:
             return BoolBaseHouseForm(post_data)
-
-        if name_form == ExcelForm().fields['action'].initial:
-            return ExcelForm(post_data, file_data)
     
-    def get_model(self,name_form, form_data):
+    def __search_configuration(self, model, search_parametrs):
+        queryset = model.all()
+        if 'people_num' in search_parametrs.keys():
+            queryset = queryset.filter(people_num = 'people_num')
+        if search_parametrs['water_smell'] == True:
+            return queryset.get(water_smell = True)
 
-        if name_form == 'flat_form':
-            ...
-        elif name_form == 'country_house_form':
-            ...
-        elif name_form == 'house_form':
-            ...
-        elif name_form == '':
-            ...
-
+        if 'water_npc' in search_parametrs.keys():
+            if search_parametrs['water_npc'] == True:
+                return queryset.get(water_npc = True)
+            queryset = queryset.filter(
+                water_hardness = search_parametrs['water_hardness'], 
+                water_ferum = search_parametrs['water_ferum'],
+                water_mpc = False,
+                water_smell = False,)
+                
     def get(self, request):
+        name_form = request.GET.get('action')
+        search_form = self.__get_sumbitted_form(name_form, request.GET)
+        if search_form.is_valid():
+            search_parametrs = search_form.data
+            model = search_form.Meta.model
+            configuration = self.__search_configuration(search_parametrs)
+
         return render(request, template_name=self.template_name, context=self.context)
 
     def post(self, request):
 
         name_form = request.POST.get('action')
-        submitted_form = self.__get_sumbitted_form(name_form,request.POST, request.FILES)
+        
+        submitted_form = self.__get_sumbitted_form(name_form,request.POST)
         self.context[name_form]=submitted_form
         if submitted_form.is_valid():
             form_data = submitted_form.cleaned_data
@@ -99,7 +109,7 @@ class CalculatorView(View):
                     except:
                         self.context['not_saved_equipment'].append(excel_equipment.name)
             else:
-                pass
+                print(submitted_form)
                 model_for_input_data = self.get_model(form_data)
                 water_data_object = self.__get_water_data_object(form_data)
                 #equipment_list = Equipment.objects.get()
