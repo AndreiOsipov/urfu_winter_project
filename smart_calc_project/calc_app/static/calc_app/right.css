@@ -21,9 +21,19 @@ body {
     height: 100%;
     left: 5%;
   }
-  
+.href-to-form-list{
+  position: fixed;
+  z-index: 2;
+  left: 0%;
+}
+
   .input-water-data {
+    position: relative;
     width: 30%;
+    height: 100%;
+    left: 5%;
+    z-index: 1;
+
     padding-top: 20px;
     padding-bottom: 12px;
     background-image: url("Design/");
@@ -98,4 +108,14 @@ body {
 li 
 {
   list-style-type: none;
+}
+
+.output
+{
+  padding: 0%;
+  position: absolute;
+  top: 10%;
+  margin-left: 50%;
+  margin-right: auto;
+
 }

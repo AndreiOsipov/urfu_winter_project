@@ -18,8 +18,7 @@ class ExcelParser:
     __equipment_type = ''
 
     def __add_equipments_from_rows(self, row): 
-        if row[0] is np.nan:
-            if not (row[1] is np.nan):
+        if row[0] is np.nan and not row[1] is np.nan:
                 self.__equipment_type = row[1]
         else:
             self.__equipment_list.append(

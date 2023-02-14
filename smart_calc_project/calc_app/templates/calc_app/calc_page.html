@@ -10,16 +10,19 @@
     <header></header>
     <main class="main-content">
         <h2>Автоматизированный подбор оборудования</h2>
+        <ul class = "href-to-form-list">
+            <li><a href="#close">закрыть</a></li>
+            <li><a href="#num_base_house">дом, есть анализ</a></li>
+            <li><a href="#bool_base_house">дом, нет анализа</a></li>
+            <li><a href="#num_flat_house">квартира, есть анализ</a></li>
+            <li><a href="#bool_flat_house">квартира, нет анализа</a></li>
+            <li><a href="#num_country_house">дача, есть анализ</a></li>
+            <li><a href="#bool_country_house">дача, нет анализа</a></li>
+        </ul>
         <ul class = "input-water-data">
             <li>
                 <section class="house-input-cards">
-                    <ul class="panels-controllers">
-                        <li><a href="#close">закрыть</a></li>
-                        <li><a href="#num_base_house">есть анализ</a></li>
-                        <li><a href="#bool_base_house">нет анализа</a></li>
-                    </ul>
-
-                    <form action="{%url 'calc_app:calc_page' %}" id="num_base_house" method="get">
+                    <form action="{%url 'calc_app:calc_page' %}" id="num_base_house" method="post">
                         <p class="form-title">Коттедж, есть анализ</p>
                         {% csrf_token %}
                         <table>
@@ -33,15 +36,15 @@
                     </table>
                     <input type="submit">
                     </form>
-                    <form action="{%url 'calc_app:calc_page' %}" id="bool_base_house" method="get">
+                    <form action="{%url 'calc_app:calc_page' %}" id="bool_base_house" method="post">
                         <p class="form-title">Коттедж, нет анализа</p>
                         {% csrf_token %}
                         <table>
-                            <tr><td>{{ bool_house_form.action }}</td></tr>
-                            {% for form_filed in bool_base_house %}
-                            {% if form_field != bool_base_house.action %}
-                            <tr><td>{{ form_field.label }}</td></tr>
-                            <tr><td>{{ form_field }}</td></tr>
+                            <tr><td>{{bool_house_form.action}}</td></tr>
+                            {% for form_filed in bool_house_form %}
+                            {% if form_filed != bool_house_form.action %}
+                                <tr><td>{{ form_filed.label }}</td></tr>
+                                <tr><td>{{ form_filed }}</td></tr>
                             {% endif %}
                             {% endfor %}
                         </table>
@@ -51,12 +54,7 @@
             </li>
             <li>
                 <section class="flat-input-cards">
-                    <ul class="panels-controllers">
-                        <li><a href="#close">закрыть</a></li>
-                        <li><a href="#num_flat_house">есть анализ</a></li>
-                        <li><a href="#bool_flat_house">нет анализа</a></li>
-                    </ul>
-                    <form action="{%url 'calc_app:calc_page' %}" id="num_flat_house" method="get">
+                    <form action="{%url 'calc_app:calc_page' %}" id="num_flat_house" method="post">
                         <p class="form-title">Квартира, есть анализ</p>
                         {% csrf_token %}
                         <table>
@@ -71,15 +69,15 @@
                         </table>
                         <input type="submit">
                     </form>
-                    <form action="{%url 'calc_app:calc_page' %}" id="bool_flat_house" method="get">
-                        <p class="form-title">КвартираБ нет анализа</p>
+                    <form action="{%url 'calc_app:calc_page' %}" id="bool_flat_house" method="post">
+                        <p class="form-title">Квартира, нет анализа</p>
                         {% csrf_token %}
                         <table>
                             <tr><td>{{bool_flat_form.action}}</td></tr>
-                            {% for form_field in bool_flat_form %}
-                            {% if form_field != bool_flat_form.action %}
-                            <tr><td>{{ form_filed.label }}</td></tr>
-                            <tr><td>{{ form_field }}</td></tr>
+                            {% for form_filed in bool_flat_form %}
+                            {% if form_filed != bool_flat_form.action %}
+                                <tr><td>{{ form_filed.label }}</td></tr>
+                                <tr><td>{{ form_filed }}</td></tr>
                             {% endif %}
                             {% endfor %}
                         </table>
@@ -89,12 +87,7 @@
             </li>
             <li>
                 <section class="country-input-cards">
-                    <ul class = "panels-controllers">
-                        <li><a href="#close">закрыть</a></li>
-                        <li><a href="#num_country_house">есть анализ</a></li>
-                        <li><a href="#bool_country_house">нет анализа</a></li>
-                    </ul>                        
-                    <form action="{%url 'calc_app:calc_page' %}" id="num_country_house" method="get">
+                    <form action="{%url 'calc_app:calc_page' %}" id="num_country_house" method="post">
                         <p class="form-title">Дача, есть анализ</p>
                         {% csrf_token %}
                         <table>
@@ -108,18 +101,18 @@
                         </table>
                         <input type="submit">
                     </form>
-                    <form action="{%url 'calc_app:calc_page' %}" id="bool_country_house" method="get">
+                    <form action="{%url 'calc_app:calc_page' %}" id="bool_country_house" method="post">
                         <p class="form-title">Дача, нет анализа</p>
                         {% csrf_token %}
                         <table>
-                        <tr><td>{{ bool_country_form.action }}</td></tr>
-                        {% for form_field in bool_country_form %}
-                        {% if form_field != bool_country_form.action %}
-                        <tr><td>{{ forn_field.label }}</td></tr>
-                        <tr><td>{{ form_field }}</td></tr>
-                        {% endif %}
-                        {% endfor %}
-                    </table>
+                            <tr><td>{{bool_country_form.action}}</td></tr>
+                            {% for form_filed in bool_country_form %}
+                            {% if form_filed != bool_country_form.action %}
+                                <tr><td>{{ form_filed.label }}</td></tr>
+                                <tr><td>{{ form_filed }}</td></tr>
+                            {% endif %}
+                            {% endfor %}
+                        </table>
                         <input type="submit">
                     </form>
                 </section>
@@ -127,7 +120,7 @@
         </ul>
         
         <section class="excel-input">
-            <form action="{%url 'calc_app:calc_page' %}" method="post">
+            <form action="{%url 'calc_app:calc_page' %}" method="post" enctype="multipart/form-data">
                 <p class="form-title">обновление цен</p>
                 {% csrf_token %}
                 <p>
@@ -140,6 +133,17 @@
             </form>
         </section>
         <section class = "output">
+            {% if output_form.rows_with_fields|length > 0%}
+            <form action="">
+                {% csrf_token %}
+                <table>
+                    <tr><th>название</th><th>цена</th></tr>
+                    {% for equipment_row in output_form.rows_with_fields %}
+                    <tr><td>{{equipment_row.name_form}}</td><td>{{equipment_row.price_form}}</td></tr>
+                    {% endfor %}
+                </table>
+            </form>
+            {% endif %}
         </section>
     </main>
     <footer></footer>
