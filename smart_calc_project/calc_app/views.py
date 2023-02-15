@@ -64,7 +64,6 @@ class CalculatorView(View):
 
     def __search_configuration(self, model, search_parametrs):
         queryset = model.objects.all()
-        print('search:',search_parametrs)
         if 'water_v_used_per_hour' in search_parametrs.keys():
             queryset = queryset.filter(water_v_used_per_hour = search_parametrs['water_v_used_per_hour'])
         if 'water_smell' in search_parametrs.keys() and search_parametrs['water_smell'] == True:
@@ -106,6 +105,5 @@ class CalculatorView(View):
                 configuration = self.__search_configuration(model, search_parametrs)
                 output_form = OutputForm(configuration)
                 self.context['output_form'] = output_form
-        else:
-            print(submitted_form.errors)
+                
         return render(request, template_name=self.template_name, context=self.context)
