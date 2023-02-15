@@ -27,7 +27,7 @@ class FloatChoiceField(forms.ChoiceField):
 
 class NumberFlatForm(forms.Form):
 
-    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='flat_form')
+    action = forms.CharField(max_length=40, widget=forms.HiddenInput(), initial='flat_form')
     water_hardness = FloatChoiceField(choices=[(0, 'до 3'), (3, 'до 7'), (7, 'от 7')], label='жесткость')
     water_ferum = FloatChoiceField(choices=[(0, 'до 0,6'),(0.6, 'до 0,9'), (0.9, 'от 0,9')], label='железо')
     water_mpc = forms.BooleanField(label='Другие примеси', required=False)
@@ -41,7 +41,7 @@ class NumberFlatForm(forms.Form):
     ]
 
 class NumberCountryHouseForm(forms.Form):
-    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='country_house_form')
+    action = forms.CharField(max_length=40, widget=forms.HiddenInput(), initial='country_house_form')
     water_v_used_per_hour = FloatChoiceField(
         choices=[
             (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'), 
@@ -73,7 +73,7 @@ class NumberCountryHouseForm(forms.Form):
     ]
         
 class NumberHouseForm(forms.Form):
-    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='house_form')
+    action = forms.CharField(max_length=40, widget=forms.HiddenInput(), initial='house_form')
     water_v_used_per_hour = FloatChoiceField(choices=[
             (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'),
             (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)'),
@@ -106,7 +106,7 @@ class NumberHouseForm(forms.Form):
     ]
     
 class BoolFlatForm(forms.Form):
-    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='bool_flat_form')
+    action = forms.CharField(max_length=40, widget=forms.HiddenInput(), initial='bool_flat_form')
     water_hardness = forms.BooleanField(label='жесткость', required=False)
     water_ferum = forms.BooleanField(label='железо', required=False)
 
@@ -117,7 +117,7 @@ class BoolFlatForm(forms.Form):
         'water_ferum']
 
 class BoolCountryHouseForm(forms.Form):
-    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='bool_country_house_form')
+    action = forms.CharField(max_length=40, widget=forms.HiddenInput(), initial='bool_country_house_form')
     water_v_used_per_hour = forms.ChoiceField(choices=[
             (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'),
             (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)')],
@@ -136,7 +136,7 @@ class BoolCountryHouseForm(forms.Form):
     ]
 
 class BoolBaseHouseForm(forms.Form):
-    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='bool_base_house_form')
+    action = forms.CharField(max_length=40, widget=forms.HiddenInput(), initial='bool_base_house_form')
     water_v_used_per_hour = forms.ChoiceField(choices=[
         (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'),
         (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)'),
@@ -157,7 +157,7 @@ class BoolBaseHouseForm(forms.Form):
     ]
 
 class ExcelForm(forms.Form):
-    action = forms.CharField(max_length=20, widget=forms.HiddenInput(), initial='excel_form')
+    action = forms.CharField(max_length=40, widget=forms.HiddenInput(), initial='excel_form')
     input_excel = ExcelFileInputFiled(label='обновить данные excel-файлом')
 
 
@@ -173,16 +173,7 @@ class FilterTr:
     def update(self, data):
         self.name_input = forms.CharField(max_length=20, initial=data)
         self.price_input = forms.DecimalField(initial=Equipment.objects.get(name=data).price)
-        
-class FillerTr:
-    '''
-    поля формы нааполнлителя
-    '''
-    def __init__(self, filler_name, filler_price, necessary_v, stock_v) -> None:
-        self.name = filler_name
-        self.price = filler_price
-        self.necessary_v = necessary_v
-        self.stock_v = stock_v
+
         
 class EquipmentRow:
     '''
@@ -221,4 +212,3 @@ class OutputForm(forms.Form):
         for equipment in equipments:
             self.__generate_fields(equipment)
             self.last_field_number+=1
-        print(f'{self.last_field_number} -- last field')

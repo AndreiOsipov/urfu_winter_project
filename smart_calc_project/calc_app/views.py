@@ -1,4 +1,5 @@
 from .models import Equipment, EquipmentType
+from django.core.exceptions import ObjectDoesNotExist
 from django import forms
 from .forms import (NumberFlatForm, 
     NumberCountryHouseForm, 
@@ -63,17 +64,14 @@ class CalculatorView(View):
 
     def __search_configuration(self, model, search_parametrs):
         queryset = model.objects.all()
+        print('search:',search_parametrs)
         if 'water_v_used_per_hour' in search_parametrs.keys():
             queryset = queryset.filter(water_v_used_per_hour = search_parametrs['water_v_used_per_hour'])
-        if search_parametrs['water_smell'] == True:
+        if 'water_smell' in search_parametrs.keys() and search_parametrs['water_smell'] == True:
             return queryset.get(water_smell = True).equipments.all()
         if 'water_mpc' in search_parametrs.keys() and search_parametrs['water_mpc'] == True:
-                return queryset.get(water_mpc = True).equipments.all()
-        return queryset.get(
-                water_hardness = search_parametrs['water_hardness'], 
-                water_ferum = search_parametrs['water_ferum'],
-                water_mpc = False,
-                water_smell = False,).equipments.all()
+            return queryset.get(water_mpc = True).equipments.all()
+        return queryset.get(**search_parametrs).equipments.all()
             
     def get(self, request):
         return render(request, template_name=self.template_name, context=self.context)
@@ -100,10 +98,14 @@ class CalculatorView(View):
                     except:
                         self.context['not_saved_equipment'].append(excel_equipment.name)
             else:
-                search_parametrs = submitted_form.cleaned_data
+                search_parametrs = {
+                    parametr: submitted_form.cleaned_data[parametr]
+                    for parametr in submitted_form.cleaned_data.keys() 
+                    if parametr != 'action'}
                 model = submitted_form.Meta.model
-                
                 configuration = self.__search_configuration(model, search_parametrs)
                 output_form = OutputForm(configuration)
                 self.context['output_form'] = output_form
+        else:
+            print(submitted_form.errors)
         return render(request, template_name=self.template_name, context=self.context)
