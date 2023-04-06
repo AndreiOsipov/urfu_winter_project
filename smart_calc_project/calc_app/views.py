@@ -1,6 +1,8 @@
 from .models import Equipment, EquipmentType
 from django.core.exceptions import ObjectDoesNotExist
-from django import forms
+from django.http import FileResponse, HttpResponse
+import io 
+import os
 from .forms import (NumberFlatForm, 
     NumberCountryHouseForm, 
     NumberHouseForm,
@@ -10,7 +12,8 @@ from .forms import (NumberFlatForm,
     ExcelForm,
     OutputForm)
 
-from .parser import ExcelParser
+from .order_file_handler.parser import ExcelParser
+from .order_file_handler.marker import ExcelMarker
 
 from django.shortcuts import render
 from django.views import View
@@ -26,11 +29,6 @@ class CalculatorView(View):
     bool_house_form = BoolBaseHouseForm()
 
     excel_form = ExcelForm()
-
-    #TODO make the  output form
-    main_filters_list = []
-    kitchen_filters_list = []
-    fillers_list = []
     
     context = {
         'flat_form': flat_form,
@@ -40,10 +38,6 @@ class CalculatorView(View):
         'bool_country_form':bool_country_house_form,
         'bool_house_form':bool_house_form,
         'excel_form': excel_form,
-        'main_filters': main_filters_list,
-        'kitchen_filters': kitchen_filters_list, 
-        'fillers': fillers_list,
-        'not_saved_equipment': [],
     }
 
     def __get_sumbitted_form(self, name_form, post_data, files = None):
@@ -76,7 +70,6 @@ class CalculatorView(View):
         return render(request, template_name=self.template_name, context=self.context)
 
     def post(self, request):
-
         name_form = request.POST.get('action')
         submitted_form = self.__get_sumbitted_form(name_form, request.POST, request.FILES)   
         self.context[name_form]=submitted_form
@@ -85,17 +78,20 @@ class CalculatorView(View):
             if name_form == 'excel_form':
                 uploaded_file = form_data['input_excel']
                 parser = ExcelParser()
-                equipment_list = parser.generate_equipment_list(uploaded_file)
-                for excel_equipment in equipment_list:
-                    try:
-                        equipment_type, was_created = EquipmentType.objects.get_or_create(type_name = excel_equipment.type, type_discount = 0)
-                        Equipment.objects.update_or_create(
-                            equipment_name = excel_equipment.name,
-                            equipment_price = excel_equipment.price,
-                            equipment_id = excel_equipment.id,
-                            equipment_type = equipment_type)
-                    except:
-                        self.context['not_saved_equipment'].append(excel_equipment.name)
+                parsed_excel = parser.get_parsed_excel(uploaded_file)
+                readed_file=  ExcelMarker().get_marked_pricelist(uploaded_file, parsed_excel.not_full_rows_indexes, color='00FFFF00')
+                
+                for excel_equipment in parsed_excel.equipment_list:
+                    equipment_type, was_created = EquipmentType.objects.get_or_create(type_name = excel_equipment.type, type_discount = 0)
+                    Equipment.objects.update_or_create(
+                        equipment_name = excel_equipment.name,
+                        equipment_price = excel_equipment.price,
+                        equipment_id = excel_equipment.id,
+                        equipment_type = equipment_type)
+                return HttpResponse(content=readed_file, headers={
+                    'Content-Type': 'calc_app/vnd.ms-excel',
+                    'Content-Disposition': 'attachemnt; filename="pricelist.xlsx"'
+                })
             else:
                 search_parametrs = {
                     parametr: submitted_form.cleaned_data[parametr]
@@ -105,5 +101,4 @@ class CalculatorView(View):
                 configuration = self.__search_configuration(model, search_parametrs)
                 output_form = OutputForm(configuration)
                 self.context['output_form'] = output_form
-                
         return render(request, template_name=self.template_name, context=self.context)

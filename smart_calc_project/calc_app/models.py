@@ -14,7 +14,7 @@ class EquipmentType(models.Model):
 class Equipment(models.Model):
     equipment_name = models.CharField(max_length=40, verbose_name='название')
     equipment_price = models.FloatField(verbose_name='цена')
-    equipment_id = models.CharField(max_length=7)
+    equipment_id = models.CharField(max_length=7, primary_key=True)
     equipment_type = models.ForeignKey(EquipmentType, on_delete=models.CASCADE,verbose_name='Тип оборудования')
 
     class Meta:
@@ -67,7 +67,7 @@ class FlatHouseWithWaterAnalysis(AbstractHouse):
 
     water_hardness = models.IntegerField(choices=[(0, 'до 3'), (3, 'до 7'), (7, 'от 7')], verbose_name='жесткость')
     water_ferum = models.FloatField(choices=[(0, 'до 0,6'),(0.6, 'до 0,9'), (0.9, 'от 0,9')], verbose_name='железо')
-    water_mpc = models.BooleanField(verbose_name='Другие примеси')
+    water_mpc = models.BooleanField(verbose_name='Другие примеси', blank=True)
     equipments = models.ManyToManyField(Equipment, through='FlatHouseAnalysisEquipment')
 
     class Meta:
@@ -102,8 +102,8 @@ class CountryHouseWithWaterAnalysis(AbstractHouse):
             (0.9, 'от 0,9')],
         verbose_name='железо')
     
-    water_mpc = models.BooleanField(verbose_name='другие примеси')
-    water_smell = models.BooleanField('запах')
+    water_mpc = models.BooleanField(verbose_name='другие примеси',blank=True)
+    water_smell = models.BooleanField('запах',blank=True)
     equipments = models.ManyToManyField(Equipment, through='CoutryHouseAnalysisEquipment')
 
     class Meta:
@@ -137,8 +137,8 @@ class BaseHouseWithWaterAnalysis(AbstractHouse):
             (0.9, 'до 8'),
             (8, 'от 8')],
         verbose_name='железо')
-    water_mpc = models.BooleanField(verbose_name='другие примеси')
-    water_smell = models.BooleanField('запах')
+    water_mpc = models.BooleanField(verbose_name='другие примеси', blank=True)
+    water_smell = models.BooleanField('запах', blank=True)
     equipments = models.ManyToManyField(Equipment, through='BaseHouseAnalysisEquimpent')
     
     class Meta:
@@ -174,7 +174,7 @@ class CountryHouseWithoutWaterAnalysis(AbstractHouse):
             verbose_name='лидей в доме')
     water_hardness = models.BooleanField(verbose_name='жесткость')
     water_ferum = models.BooleanField(verbose_name='железо')
-    water_smell = models.BooleanField(verbose_name='запах')
+    water_smell = models.BooleanField(verbose_name='запах', blank=True)
     equipments = models.ManyToManyField(Equipment, through='CountryHouseNoAnalysisEquipment')
 
     class Meta:
@@ -198,7 +198,7 @@ class BaseHouseWithoutWaterAnalysis(AbstractHouse):
         verbose_name='людей в доме')
     water_hardness = models.BooleanField(verbose_name='жесткость')
     water_ferum = models.BooleanField(verbose_name='железо')
-    water_smell = models.BooleanField(verbose_name='запах')
+    water_smell = models.BooleanField(verbose_name='запах', blank=True)
     equipments = models.ManyToManyField(Equipment, through='BaseHouseNoAnalysisEquipment')
 
     class Meta:
@@ -214,7 +214,6 @@ class BaseHouseAnalysisEquimpent(models.Model):
         verbose_name = 'Коттедж --  борудование (есть анализ)'
         verbose_name_plural = verbose_name
         unique_together = ['input_data','equipment']
-
 
 class BaseHouseNoAnalysisEquipment(models.Model):
     input_data = models.ForeignKey(BaseHouseWithoutWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
@@ -245,8 +244,6 @@ class CountryHouseNoAnalysisEquipment(models.Model):
         verbose_name_plural = verbose_name
         unique_together = ['input_data','equipment']
 
-
-
 class FlatHouseAnalysisEquipment(models.Model):
     
     input_data = models.ForeignKey(FlatHouseWithWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
@@ -256,7 +253,6 @@ class FlatHouseAnalysisEquipment(models.Model):
         verbose_name = 'Квартира --  борудование (есть анализ)'
         verbose_name_plural = verbose_name
         unique_together = ['input_data','equipment']
-
 
 class FlatHouseNoAnalysisEquipment(models.Model):
     inout_data = models.ForeignKey(FlatHouseWithoutWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')

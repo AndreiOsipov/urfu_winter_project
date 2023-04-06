@@ -16,6 +16,7 @@ from .models  import (
     FlatHouseNoAnalysisEquipment
 )
 
+
 class BaseHouseAnalysisEquimpentInline(admin.TabularInline):
     model = BaseHouseAnalysisEquimpent
     extra = 1
