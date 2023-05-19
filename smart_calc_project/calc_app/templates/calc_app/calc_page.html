@@ -10,143 +10,43 @@
     <header></header>
     <main class="main-content">
         <h2>Автоматизированный подбор оборудования</h2>
-        <ul class = "href-to-form-list">
-            <li><a href="#close">закрыть</a></li>
-            <li><a href="#num_base_house">дом, есть анализ</a></li>
-            <li><a href="#bool_base_house">дом, нет анализа</a></li>
-            <li><a href="#num_flat_house">квартира, есть анализ</a></li>
-            <li><a href="#bool_flat_house">квартира, нет анализа</a></li>
-            <li><a href="#num_country_house">дача, есть анализ</a></li>
-            <li><a href="#bool_country_house">дача, нет анализа</a></li>
-        </ul>
-        <ul class = "input-water-data">
-            <li>
-                <section class="house-input-cards">
-                    <form action="{%url 'calc_app:calc_page' %}" id="num_base_house" method="post">
-                        <p class="form-title">Коттедж, есть анализ</p>
-                        {% csrf_token %}
-                        <table>
-                            <tr><td>{{house_form.action}}</td></tr>
-                            {% for form_filed in house_form %}
-                            {% if form_filed != house_form.action %}
-                                <tr><td>{{ form_filed.label }}</td></tr>
-                                <tr><td>{{ form_filed }}</td></tr>
-                            {% endif %}
-                            {% endfor %}
-                    </table>
-                    <input type="submit">
-                    </form>
-                    <form action="{%url 'calc_app:calc_page' %}" id="bool_base_house" method="post">
-                        <p class="form-title">Коттедж, нет анализа</p>
-                        {% csrf_token %}
-                        <table>
-                            <tr><td>{{bool_house_form.action}}</td></tr>
-                            {% for form_filed in bool_house_form %}
-                            {% if form_filed != bool_house_form.action %}
-                                <tr><td>{{ form_filed.label }}</td></tr>
-                                <tr><td>{{ form_filed }}</td></tr>
-                            {% endif %}
-                            {% endfor %}
-                        </table>
-                        <input type="submit">
-                    </form>
-                </section>
-            </li>
-            <li>
-                <section class="flat-input-cards">
-                    <form action="{%url 'calc_app:calc_page' %}" id="num_flat_house" method="post">
-                        <p class="form-title">Квартира, есть анализ</p>
-                        {% csrf_token %}
-                        <table>
-                            <td>{{flat_form.action}}</td>
-                                </tr>
-                                {% for form_field in flat_form %}
-                                {% if form_field != flat_form.action %}
-                                <tr><td>{{ form_field.label }}</td></tr>
-                                <tr><td>{{ form_field }}</td></tr>
-                                {% endif %}
-                                {% endfor %}
-                        </table>
-                        <input type="submit">
-                    </form>
-                    <form action="{%url 'calc_app:calc_page' %}" id="bool_flat_house" method="post">
-                        <p class="form-title">Квартира, нет анализа</p>
-                        {% csrf_token %}
-                        <table>
-                            <tr><td>{{bool_flat_form.action}}</td></tr>
-                            {% for form_filed in bool_flat_form %}
-                            {% if form_filed != bool_flat_form.action %}
-                                <tr><td>{{ form_filed.label }}</td></tr>
-                                <tr><td>{{ form_filed }}</td></tr>
-                            {% endif %}
-                            {% endfor %}
-                        </table>
-                        <input type="submit">
-                    </form>
-                </section>
-            </li>
-            <li>
-                <section class="country-input-cards">
-                    <form action="{%url 'calc_app:calc_page' %}" id="num_country_house" method="post">
-                        <p class="form-title">Дача, есть анализ</p>
-                        {% csrf_token %}
-                        <table>
-                            <tr><td>{{country_form.action}}</td></tr>
-                                {% for form_field in country_form %}
-                                {% if form_field != country_form.action %}
-                                <tr><td>{{ form_field.label }}</td></tr>
-                                <tr><td>{{ form_field }}</td></tr>
-                                {% endif %}
-                                {% endfor %}
-                        </table>
-                        <input type="submit">
-                    </form>
-                    <form action="{%url 'calc_app:calc_page' %}" id="bool_country_house" method="post">
-                        <p class="form-title">Дача, нет анализа</p>
-                        {% csrf_token %}
-                        <table>
-                            <tr><td>{{bool_country_form.action}}</td></tr>
-                            {% for form_filed in bool_country_form %}
-                            {% if form_filed != bool_country_form.action %}
-                                <tr><td>{{ form_filed.label }}</td></tr>
-                                <tr><td>{{ form_filed }}</td></tr>
-                            {% endif %}
-                            {% endfor %}
-                        </table>
-                        <input type="submit">
-                    </form>
-                </section>
-            </li>
-        </ul>
-        
-        <section class="excel-input">
-            <form action="{%url 'calc_app:calc_page' %}" method="post" enctype="multipart/form-data">
-                <p class="form-title">обновление цен</p>
-                {% csrf_token %}
-                <p>
-                    {{ excel_form.action }}
-                </p>
-                <p>
-                    {{ excel_form.input_excel }}
-                </p>
-                <input type="submit">
+            <form action="{%url 'calc_app:retrived_complect' %}" id="num_base_house" method="get" >
+                <!-- {% csrf_token %} -->
+                {{search_form.form_name}}
+                <p>{{search_form.water_consumption.label}} {{search_form.water_consumption}}</p>
+                <p>{{search_form.people_number.label}} {{search_form.people_number}}</p>
+                <p>{{search_form.condensation_protection.label}} {{search_form.condensation_protection}}</p>
+                <p>{{search_form.builder_type.label}} {{search_form.builder_type}}</p>
+                <p>{{search_form.hardness.label}} {{search_form.hardness}}</p>
+                <p>{{search_form.ferum.label}} {{search_form.ferum}}</p>
+                <p>{{search_form.po.label}} {{search_form.po}}</p>
+                <p>{{search_form.hydrogen_sulfite.label}} {{search_form.hydrogen_sulfite}}</p>
+                <p>{{search_form.ammonium.label}} {{search_form.ammonium}}</p>
+                <p>{{search_form.manganese.label}} {{search_form.manganese}}</p>
+                <input type="submit" value="найти" name="" id="">
             </form>
-        </section>
-        <section class = "output">
-            {% if output_form.rows_with_fields|length > 0%}
-            <form action="">
+            {% if edit_form %}
+            <form action="{%url 'calc_app:get_contract' %}" method="get">    
                 {% csrf_token %}
-                <table>
-                    <tr><th>название</th><th>цена</th></tr>
-                    {% for equipment_row in output_form.rows_with_fields %}
-                    <tr><td>{{equipment_row.name_form}}</td><td>{{equipment_row.price_form}}</td></tr>
-                    {% endfor %}
-                </table>
+                <p>{{edit_form.complect.label}} {{edit_form.complect}}</p>
+                {% for equipment_row in edit_form.equipments_fields %}
+                    <p>{{ equipment_row.name_form }} {{equipment_row.price_form}}</p>
+                {% endfor %}
+                <p>{{edit_form.filler}} {{edit_form.filler_price}}</p>
+                <div>
+                    <p>{{edit_form.client_first_name.label}} {{edit_form.client_first_name}}</p>
+                    <p>{{edit_form.client_last_name.label}} {{edit_form.client_last_name}}</p>
+                    <p>{{edit_form.client_phone_number.label}} {{edit_form.client_phone_number}}</p>
+                </div>
+                <div>
+                   <p>{{edit_form.builder_type.label}} {{edit_form.builder_type}}</p>
+                   <p>{{edit_form.montage_place.label}} {{edit_form.montage_place}}</p>
+                   <p>{{edit_form.main_water_source.label}} {{edit_form.main_water_source}}</p>
+                   <p>{{ edit_form.sewerage_type.label }} {{edit_form.sewerage_type}}</p>
+                </div>
+                <input type="submit" value="загрузить договор">
             </form>
-            {% else %}
-            <p>для таких входных данных еще не внесено оборудование</p>
             {% endif %}
-        </section>
     </main>
     <footer></footer>
 </body>

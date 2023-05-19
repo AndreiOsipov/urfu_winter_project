@@ -2,47 +2,46 @@ from django.db import models
 from django.db.models.functions import Length
 
 models.CharField.register_lookup(Length)
-def generate_choices(start, end, step):
-    choices = []
 
-    for i in range(start, end, step):
-        choices.append(
-            (i,f'до {i+1}')
-        )
+class ChoicesGenerator:
+    def generate_tuple(self, value):
+        return (value, f'до {value}')
+    
+    def generate_choices(self, start, end, step):
+        choices = []
 
-    return choices
+        for i in range(start, end, step):
+            choices.append((i,f'до {i+1}'))
 
-class BuilderObject(models.Model):
+        return choices
 
-    builder_type = models.CharField(max_length=50, choices=[('H','дом')], verbose_name='Объект')
-    montage_place  = models.CharField(max_length=50, choices=[('B', 'бойлерная')], verbose_name='место установки')
-    main_water_source = models.CharField(max_length=50,choices=[('W','скважина'),], verbose_name='источник воды')
-    sewerage_type = models.CharField(max_length=50, verbose_name='тип каназизации')
-
-    water_consumption = models.FloatField(choices=[(1.2,'до 1,2'),(1.8,'до 1,8'),(2.4,'до 2,4'),(3,'до 3')], verbose_name='потребление воды (л/ч)')
+class WaterConsumptionLevel(models.Model):
+    water_consumption = models.FloatField(choices=[
+        (1.2,'до 1,2 3 точки (пример: 2 крана и душ)'),
+        (1.8,'до 1,8 4-5 точек (пример: 2 крана, стиральная машина/посудомоечная машина, душ) (пиктограммами)'),
+        (2.4,'до 2,4 4-5 точек большего объема (пример: 2 крана, стиральная машина и посудомоечная машина, тропический душ)'),
+        (3,'до 3 от 5 точки большего объема (пример: бассейн, или 2 крана, стиральная машина и посудомоечная машина, тропический душ)')
+        ], verbose_name='потребление воды (л/ч)')
     people_number = models.IntegerField(choices=[(3,'до 3'), (4, 'до 4'), (5, 'до 5'), (6,'до 6'), (7,'до 7')], verbose_name='еоличество человек')
     human_daily_norm = models.FloatField(default=0.15, verbose_name='норма потребления воды на человека в сутки')
 
-    # daily_water_consumption = models.FloatField(verbose_name='общее потребление воды в сутки')
-    condensation_protection = models.BooleanField(verbose_name='защита от канденсата')
-
-
-    def __str__(self) -> str:
-        return str(self.water_consumption)
-    
     class Meta:
-        verbose_name = 'об объекте'
-        verbose_name_plural = 'об объектах'
-
+        verbose_name = 'Уровень потреьоения воды'
+        verbose_name_plural = 'уровни потребления воды'
 
 class FullWaterParametrs(models.Model):
-    hardness = models.FloatField(choices=generate_choices(0,16,1), verbose_name='жесткость')
-    ferum = models.FloatField(choices=generate_choices(0,21, 1),verbose_name='железо')
-    po = models.FloatField(choices=generate_choices(0,16,1),verbose_name='ПО')
-    hydrogen_sulfite = models.FloatField(choices=generate_choices(0,6,1), verbose_name='сервоводород')
-    ammonium = models.FloatField(choices=generate_choices(0,6,1),verbose_name='аммоний')
-    manganese = models.FloatField(choices=generate_choices(0,6,1),verbose_name='марганец')
+    choices_generator = ChoicesGenerator()
+    hardness = models.FloatField(choices=choices_generator.generate_choices(0,16,1), verbose_name='жесткость')
+    ferum = models.FloatField(choices=choices_generator.generate_choices(0,21, 1),verbose_name='железо')
 
+    po = models.FloatField(choices=choices_generator.generate_choices(0,16,1),verbose_name='ПО')
+    hydrogen_sulfite = models.FloatField(choices=choices_generator.generate_choices(0,6,1), verbose_name='сервоводород')
+    ammonium = models.FloatField(choices=choices_generator.generate_choices(0,6,1),verbose_name='аммоний')
+    manganese = models.FloatField(choices=choices_generator.generate_choices(0,6,1),verbose_name='марганец')
+    
+    exceeding_consequence = models.TextField(blank=True, verbose_name='последстваия превышения')
+    recommendations = models.TextField(blank=True, verbose_name='рекоммендации')
+    
     def __str__(self) -> str:
         return 'жесткость '+str(self.hardness) + 'железо '+ str(self.ferum) +'ПО '+ str(self.po) +'сероводород '+ str(self.hydrogen_sulfite) +'аммоний '+ str(self.ammonium) +'марганец '+ str(self.manganese)
 
@@ -52,19 +51,45 @@ class FullWaterParametrs(models.Model):
 
 class Columns(models.Model):
     name = models.CharField(max_length=50, verbose_name='название колонны')
-    builder_object = models.ForeignKey(BuilderObject, verbose_name='объект, на который она ставится')
-
+    
     def __str__(self) -> str:
         return self.name
 
     class Meta:
-        verbose_name = 'подходящая конна'
-        verbose_name_plural = 'подходящие конна'
+        verbose_name = 'водяная колонна'
+        verbose_name_plural = 'водяные колонны'
 
 class Complects(models.Model):
+    
+    full_water_parametrs = models.ForeignKey(FullWaterParametrs, on_delete=models.CASCADE, verbose_name='анализ воды')
+    water_consumption_level = models.ForeignKey(WaterConsumptionLevel, verbose_name='уровень потребления воды', on_delete=models.CASCADE)
+    column = models.ForeignKey(Columns, verbose_name='колонна', on_delete=models.CASCADE)
+
+    complect_code = models.CharField(max_length=250, verbose_name='код комплекта')
     name = models.CharField(max_length=50, verbose_name='название комплекта')
-    full_water_parametrs = models.ForeignKey(FullWaterParametrs, verbose_name='анализ воды')
-    builder_object = models.ForeignKey(BuilderObject, verbose_name='объект, с которого взят анализ')
+    photo = models.ImageField(verbose_name='фото комплекта', null=True)
+    discrpiption = models.TextField(verbose_name='описание комплекта')
+
+    max_system_performans = models.FloatField(verbose_name='максимальная производительность системы (м3 / ч)')
+    min_pressure = models.FloatField(verbose_name='Давление воды на входе системы водоподготовки минимальное, при максимальном расходе м3/час, атм.')
+    max_pressure = models.FloatField(verbose_name='Давление воды на входе системы водоподготовки максимальное, атм.')
+    pressure_loss = models.FloatField(verbose_name='Потери давления в системе, атм.')
+    body_life_time = models.IntegerField(verbose_name='Срок эксплуатации корпусов фильтров, лет')
+    regenerations_loss_v = models.FloatField(verbose_name='Объем воды, сбрасываемой многофункциональным фильтром во время регенерации, м3')
+    regeneration_period = models.CharField(max_length= 50,verbose_name='Периодичность регенерации')
+
+    min_size = models.CharField(max_length=50, verbose_name='Минимальные размеры для установки, м')
+    min_hight = models.FloatField(verbose_name='Минимальная высота потолка, м')
+    sockets_number = models.IntegerField(verbose_name='Наличие электрических розеток, со стабилизированным U ~ 220В 10%, шт., не менее	1')
+    electric_power = models.IntegerField(verbose_name='Общая электрическая мощность системы водоподготовки, Вт	25')
+    doorways_size  = models.CharField(max_length = 50, verbose_name='Дверные проемы, мм')
+    requered_flat_floor_cover = models.BooleanField(verbose_name='Наличие ровного полового покрытия в месте установки водоподготовки')
+    required_ventilation = models.BooleanField(verbose_name='Наличие в помещении приточной и вытяжной вентиляции')
+    required_severage = models.BooleanField(verbose_name='Наличие канализационной сети в месте установки водоподготовки	обязательно')
+    severage_d = models.CharField(max_length=50,verbose_name='Диаметр канализационной сети в месте врезки регенерационной линии с фильтров')
+
+    condensation_protection = models.BooleanField(verbose_name='защита от канденсата')
+
     def __str__(self) -> str:
         return self.name
 
@@ -72,11 +97,18 @@ class Complects(models.Model):
         verbose_name = 'комплект оборудования'
         verbose_name_plural = 'комплекы оборудования'
 
-class Equipment(models.Model):
+class EquipmentType(models.Model):
+    name = models.CharField(max_length=50,verbose_name='название типа')
+
+    class Meta:
+        verbose_name = 'тип оборудования'
+        verbose_name_plural = 'типы оборудования'
+
+class Equipments(models.Model):
     name = models.CharField(max_length=50, verbose_name='название оборудования')
     price = models.FloatField(verbose_name='цена оборудования')
     complects = models.ManyToManyField(Complects, through='ComplectsEquipments')
-
+    equipment_type = models.ForeignKey(EquipmentType, on_delete=models.CASCADE)
     def __str__(self) -> str:
         return self.name
 
@@ -85,13 +117,18 @@ class Equipment(models.Model):
         verbose_name_plural = verbose_name
 
 class ComplectsEquipments(models.Model):
-    complect = models.ForeignKey(Complects)
-    equipment = models.ForeignKey(Equipment)
+    complect = models.ForeignKey(Complects, on_delete=models.CASCADE, related_name='complects_equipments')
+    equipment = models.ForeignKey(Equipments, on_delete=models.CASCADE,related_name='equipments_complects')
+    class Meta:
+        verbose_name = 'принадлежность оборудования к комплекту'
+        verbose_name_plural = 'принадлежность оборудования к комплектам'
 
-class Filler(models.Model):
+class Fillers(models.Model):
+    full_water_parametrs = models.ForeignKey(FullWaterParametrs, verbose_name='полный анализ воды', on_delete=models.CASCADE)
+    water_consumption_level = models.ForeignKey(WaterConsumptionLevel, verbose_name='уровень потребления воды', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, verbose_name='название наполнителя')
-    full_water_parametrs = models.ForeignKey(FullWaterParametrs, verbose_name='полный анализ воды')
-    builder_object = models.ForeignKey(BuilderObject, verbose_name='объект, для которого нужен наполнитель')
+    price = models.FloatField(verbose_name= 'цена наполнителя', default=500)
+    
     
     def __str__(self) -> str:
         return self.name
@@ -99,269 +136,97 @@ class Filler(models.Model):
     class Meta:
         verbose_name = 'наполнитель'
         verbose_name_plural = 'наполнители'
-        
-#-----------------------------------------------------------
 
+class BuilderObject(models.Model):
 
+    builder_type = models.CharField(max_length=50, choices=[('H','дом')], verbose_name='Объект')
+    montage_place  = models.CharField(max_length=50, choices=[('B', 'бойлерная')], verbose_name='место установки')
+    main_water_source = models.CharField(max_length=50,choices=[('W','скважина'),], verbose_name='источник воды')
+    sewerage_type = models.CharField(max_length=50, verbose_name='тип каназизации')
 
-
-# class EquipmentType(models.Model):
-#     type_name = models.CharField(max_length=50, primary_key=True, verbose_name='тип оборудования')
-#     type_discount = models.FloatField(verbose_name='скидка')
-
-#     class Meta:
-#         verbose_name = 'Тип оборудования'
-#         verbose_name_plural = 'Типы оборудования'
-
-# class Equipment(models.Model):
-#     equipment_name = models.CharField(max_length=40, verbose_name='название')
-#     equipment_price = models.FloatField(verbose_name='цена')
-#     equipment_id = models.CharField(max_length=7, primary_key=True)
-#     equipment_type = models.ForeignKey(EquipmentType, on_delete=models.CASCADE,verbose_name='Тип оборудования')
-
-#     class Meta:
-#         verbose_name = 'Оборудование'
-#         verbose_name_plural = verbose_name
-#         constraints = [
-#             models.CheckConstraint(name='equipment_id_like', check=models.Q(equipment_id__length__gte=7)),
-#             models.CheckConstraint(name='price_gte_zero', check=models.Q(equipment_price__gte=0)),            
-#         ]
-#     def __str__(self) -> str:
-#         return self.equipment_name
-        
-# class AbstractHouse(models.Model): 
-#     fiedls_names_for_str = []
-
-#     def get_str_field(self, field):
-#         str_field = ''
-#         if field.verbose_name:
-#             str_field += f'{field.verbose_name} '
-#         if field.choices:
-#             for choice in field.choices:
-#                 if choice[0] == field.value_from_object(self):
-#                     str_field+=f'{choice[1]} '
-#         else:
-#             if field.value_from_object(self):
-#                 str_field+='Да '
-#             else:
-#                 str_field += 'Нет '
-#         return str_field
-
-#     def __str__(self) -> str:
-#         #прикрепить ->:<-
-#         #
-#         #
-#         str_r = ''
-#         for field_name in self.fiedls_names_for_str:
-#             field = self._meta.get_field(field_name)
-#             str_r += self.get_str_field(field)
-#         return str_r
-
-#     class Meta:
-#         abstract = True
-
-# class FlatHouseWithWaterAnalysis(AbstractHouse):
-#     fiedls_names_for_str = [
-#         'water_hardness',
-#         'water_ferum',
-#         'water_mpc',
-#     ]
-
-#     water_hardness = models.IntegerField(choices=[(0, 'до 3'), (3, 'до 7'), (7, 'от 7')], verbose_name='жесткость')
-#     water_ferum = models.FloatField(choices=[(0, 'до 0,6'),(0.6, 'до 0,9'), (0.9, 'от 0,9')], verbose_name='железо')
-#     water_mpc = models.BooleanField(verbose_name='Другие примеси', blank=True)
-#     equipments = models.ManyToManyField(Equipment, through='FlatHouseAnalysisEquipment')
-
-#     class Meta:
-#         verbose_name = 'Квартира, есть анализ'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['water_hardness','water_ferum','water_mpc']
-
-# class CountryHouseWithWaterAnalysis(AbstractHouse):
-#     fiedls_names_for_str = [
-#         'water_v_used_per_hour',
-#         'water_hardness',
-#         'water_ferum',
-#         'water_mpc',
-#         'water_smell',
-#     ]
+    water_consumption = models.FloatField(choices=[
+        (1.2,'до 1,2 3 точки (пример: 2 крана и душ)'),
+        (1.8,'до 1,8 4-5 точек (пример: 2 крана, стиральная машина/посудомоечная машина, душ) (пиктограммами)'),
+        (2.4,'до 2,4 4-5 точек большего объема (пример: 2 крана, стиральная машина и посудомоечная машина, тропический душ)'),
+        (3,'до 3 от 5 точки большего объема (пример: бассейн, или 2 крана, стиральная машина и посудомоечная машина, тропический душ)')
+        ], verbose_name='потребление воды (л/ч)')
     
-#     water_v_used_per_hour = models.FloatField(
-#         choices=[
-#             (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'), 
-#             (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)')],
-#         verbose_name='людей в доме')
-#     water_hardness = models.IntegerField(
-#         choices=[
-#             (0, 'до 3'),
-#             (3, 'до 7'),
-#             (7, 'от 7')],
-#         verbose_name='жесткость')
-#     water_ferum = models.FloatField(
-#         choices=[
-#             (0, 'до 0,3'),
-#             (0.3, 'до 0,9'),
-#             (0.9, 'от 0,9')],
-#         verbose_name='железо')
+    people_number = models.IntegerField(choices=[(3,'до 3'), (4, 'до 4'), (5, 'до 5'), (6,'до 6'), (7,'до 7')], verbose_name='еоличество человек')
+    human_daily_norm = models.FloatField(default=0.15, verbose_name='норма потребления воды на человека в сутки')
+
+    def __str__(self) -> str:
+        return str(self.daily_water_consumption)
     
-#     water_mpc = models.BooleanField(verbose_name='другие примеси',blank=True)
-#     water_smell = models.BooleanField('запах',blank=True)
-#     equipments = models.ManyToManyField(Equipment, through='CoutryHouseAnalysisEquipment')
-
-#     class Meta:
-#         verbose_name = 'Дача, есть анализ'
-#         unique_together = ['water_v_used_per_hour','water_hardness','water_ferum','water_mpc','water_smell']
-
-# class BaseHouseWithWaterAnalysis(AbstractHouse):
-#     fiedls_names_for_str = [
-#         'water_v_used_per_hour',
-#         'water_hardness',
-#         'water_ferum',
-#         'water_mpc',
-#         'water_smell',
-#     ]
-
-#     water_v_used_per_hour = models.FloatField(choices=[
-#             (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'),
-#             (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)'),
-#             (2.0, '5 - 8 человек (до 2,5-х куб.м./ч)'),
-#             (2.5, '8 и более человек(от 2,5 - х куб.м./ч)')],
-#         verbose_name='людей в доме')
-#     water_hardness = models.IntegerField(choices=[
-#             (0, 'до 3'),
-#             (3, 'до 8'),
-#             (8, 'до 15'),
-#             (20, 'от 15')], 
-#         verbose_name='жесткость')
-#     water_ferum = models.FloatField(choices=[
-#             (0, 'до 0,3'),
-#             (0.3, 'до 0,9'),
-#             (0.9, 'до 8'),
-#             (8, 'от 8')],
-#         verbose_name='железо')
-#     water_mpc = models.BooleanField(verbose_name='другие примеси', blank=True)
-#     water_smell = models.BooleanField('запах', blank=True)
-#     equipments = models.ManyToManyField(Equipment, through='BaseHouseAnalysisEquimpent')
+    @property
+    def daily_water_consumption(self):
+        return round(self.human_daily_norm * self.people_number, 2)
     
-#     class Meta:
-#         verbose_name = 'Коттедж, есть анализ'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['water_v_used_per_hour','water_hardness','water_ferum','water_mpc','water_smell']
+    class Meta:
+        verbose_name = 'об объекте'
+        verbose_name_plural = 'об объектах'
 
-# class FlatHouseWithoutWaterAnalysis(AbstractHouse):
-#     fiedls_names_for_str = [
-#         'water_hardness',
-#         'water_ferum']
+class Client(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=10, null=True)
+
+    class Meta:
+        verbose_name = 'Клиент'
+        verbose_name_plural = 'Клиенты'
+
+class MontageWork(models.Model):
+    complects = models.ManyToManyField(Complects, through='ComplectMontage')
+    name = models.CharField(max_length=50,verbose_name='название')
+    price = models.FloatField(verbose_name='цена')
+
+class ComplectMontage(models.Model):
+    montage_work = models.ForeignKey(MontageWork, on_delete=models.CASCADE)
+    complect = models.ForeignKey(Complects, on_delete=models.CASCADE)
+
+class Contract(models.Model):
+    equipments = models.ManyToManyField(Equipments, through='ContractEquipment')
+    fillers = models.ManyToManyField(Fillers, verbose_name='наполнители', through='ContractFillers')
+    montage_works = models.ManyToManyField(MontageWork, through='ContractMontageWork')
+    complect = models.ForeignKey(Complects, verbose_name='комплект', on_delete=models.CASCADE)
+    # complect = models.ManyToManyField(Complects, verbose_name='комплекты к этому договору', through='ContractComplect')
+    client = models.ForeignKey(Client, verbose_name='клиент', on_delete=models.CASCADE)
+    builder_obj = models.ForeignKey(BuilderObject, verbose_name='объект, для которого подобрали фильры', on_delete=models.CASCADE)
     
-#     water_hardness = models.BooleanField(verbose_name='жесткость',default=False)
-#     water_ferum = models.BooleanField(verbose_name='железо')    
-#     equipments = models.ManyToManyField(Equipment, through='FlatHouseNoAnalysisEquipment')
+    class Meta:
+        verbose_name = 'Договор'
+        verbose_name_plural = 'договоры'
 
-#     class Meta:
-#         verbose_name = 'Квартира, нет анализа'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['water_hardness','water_ferum']
+# class ContractComplect(models.Model):
+#     contract = models.ForeignKey(Contract, verbose_name='договор', on_delete=models.CASCADE)
+#     complect = models.ForeignKey(Complects, verbose_name='комплект', on_delete=models.CASCADE)
 
-# class CountryHouseWithoutWaterAnalysis(AbstractHouse):
-#     fiedls_names_for_str = [
-#         'water_v_used_per_hour',
-#         'water_hardness',
-#         'water_ferum',
-#         'water_smell',
-#     ]
+class ContractMontageWork(models.Model):
+    contract = models.ForeignKey(Contract,verbose_name='договор', on_delete=models.CASCADE)
+    montage_work = models.ForeignKey(MontageWork, verbose_name='работа', on_delete=models.CASCADE)
+    number = models.IntegerField()
+    montage_price_for_this_contract = models.FloatField()
+
+    @property 
+    def cost(self):
+        return self.number * self.montage_price_for_this_contract
+
+
+class ContractFillers(models.Model):
+    contract = models.ForeignKey(Contract, verbose_name='договор', on_delete=models.CASCADE)
+    filler = models.ForeignKey(Fillers, verbose_name='наполнитель', on_delete=models.CASCADE)
+
+
+class ContractEquipment(models.Model):
+    choice_generator = ChoicesGenerator()
+    equipment = models.ForeignKey(Equipments,verbose_name='оборудование', on_delete=models.CASCADE)
+    contract = models.ForeignKey(Contract,verbose_name='контракт', on_delete=models.CASCADE)
+    number = models.IntegerField(choices=choice_generator.generate_choices(1, 4, 1))
+    equipment_price_for_this_contract = models.FloatField()
     
-#     water_v_used_per_hour = models.FloatField(choices=[
-#             (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'),
-#             (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)')],
-#             verbose_name='лидей в доме')
-#     water_hardness = models.BooleanField(verbose_name='жесткость')
-#     water_ferum = models.BooleanField(verbose_name='железо')
-#     water_smell = models.BooleanField(verbose_name='запах', blank=True)
-#     equipments = models.ManyToManyField(Equipment, through='CountryHouseNoAnalysisEquipment')
+    @property 
+    def cost(self):
+        return self.number * self.equipment_price_for_this_contract
 
-#     class Meta:
-#         verbose_name = 'Дача, нет анализа'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['water_v_used_per_hour', 'water_hardness', 'water_ferum', 'water_smell']
-
-# class BaseHouseWithoutWaterAnalysis(AbstractHouse):
-#     fiedls_names_for_str = [
-#         'water_v_used_per_hour',
-#         'water_hardness',
-#         'water_ferum',
-#         'water_smell',
-#     ]
-
-#     water_v_used_per_hour = models.FloatField(choices=[
-#         (1.0, '1 - 2 человека (до 1,3 куб.м./ч)'), 
-#         (1.3, ' 3 - 4 человека (до 2-х куб.м./ч)'), 
-#         (2.0, '5 - 8 человек (до 2,5-х куб.м./ч)'), 
-#         (2.5, '8 и более человек(от 2,5 - х куб.м./ч)')],
-#         verbose_name='людей в доме')
-    
-#     water_hardness = models.BooleanField(verbose_name='жесткость')
-#     water_ferum = models.BooleanField(verbose_name='железо')
-#     water_smell = models.BooleanField(verbose_name='запах', blank=True)
-#     equipments = models.ManyToManyField(Equipment, through='BaseHouseNoAnalysisEquipment')
-
-#     class Meta:
-#         verbose_name = 'Коттедж, нет анализа'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['water_v_used_per_hour', 'water_hardness', 'water_ferum', 'water_smell']
-
-# class BaseHouseAnalysisEquimpent(models.Model):
-#     input_data = models.ForeignKey(BaseHouseWithWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
-#     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
-    
-#     class Meta:
-#         verbose_name = 'Коттедж --  борудование (есть анализ)'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['input_data','equipment']
-
-# class BaseHouseNoAnalysisEquipment(models.Model):
-#     input_data = models.ForeignKey(BaseHouseWithoutWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
-#     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
-
-#     class Meta:
-#         verbose_name = 'Коттедж --  борудование (нет анализа)'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['input_data','equipment']
-
-# class CoutryHouseAnalysisEquipment(models.Model):
-    
-#     input_data = models.ForeignKey(CountryHouseWithWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
-#     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
-
-#     class Meta:
-#         verbose_name = 'Дача --  борудование (есть анализ)'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['input_data','equipment']
-
-
-# class CountryHouseNoAnalysisEquipment(models.Model):
-#     input_data = models.ForeignKey(CountryHouseWithoutWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
-#     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
-
-#     class Meta:
-#         verbose_name = 'Дача --  борудование (нет анализа)'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['input_data','equipment']
-
-# class FlatHouseAnalysisEquipment(models.Model):
-    
-#     input_data = models.ForeignKey(FlatHouseWithWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
-#     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
-
-#     class Meta:
-#         verbose_name = 'Квартира --  борудование (есть анализ)'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['input_data','equipment']
-
-# class FlatHouseNoAnalysisEquipment(models.Model):
-#     inout_data = models.ForeignKey(FlatHouseWithoutWaterAnalysis, on_delete=models.CASCADE, verbose_name='входные данные')
-#     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Оборудование')
-
-#     class Meta:
-#         verbose_name = 'Капртира --  борудование (нет анализа)'
-#         verbose_name_plural = verbose_name
-#         unique_together = ['inout_data','equipment']
+    class Meta:
+        verbose_name =  'прайс-лсит на этот договор'
+        verbose_name_plural = 'прайс-листы к договорам'
