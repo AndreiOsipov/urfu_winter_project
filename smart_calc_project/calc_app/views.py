@@ -38,7 +38,6 @@ class GetComplectView(View):
         hydrogen_sulfite = float(form_parametrs['hydrogen_sulfite'])
         ammonium = float(form_parametrs['ammonium'])
         manganese = float(form_parametrs['manganese'])
-        condensation_protection = False
         
         if 'condensation_protection' in form_parametrs:
             condensation_protection = True
@@ -53,9 +52,8 @@ class GetComplectView(View):
             hydrogen_sulfite,
             ammonium,
             manganese,
-            condensation_protection
             )
-        
+        print(requst.GET)
         water_parametrs = FullWaterParametrs.objects.filter(
             hardness=hardness,
             ferum = ferum,
@@ -64,14 +62,16 @@ class GetComplectView(View):
             ammonium = ammonium,
             manganese = manganese
         ).first()
-        water_consumption_level = WaterConsumptionLevel.objects.filter(water_consumption=water_consumption,people_number = people_number).first()
-        complect = Complects.objects.filter(full_water_parametrs = water_parametrs, water_consumption_level=water_consumption_level).first()
-        filler = Fillers.objects.filter(full_water_parametrs = water_parametrs, water_consumption_level=water_consumption_level).first()
+
+        if not(water_parametrs is None):
+            water_consumption_level = WaterConsumptionLevel.objects.filter(water_consumption=water_consumption,people_number = people_number).first()
+            complect = Complects.objects.filter(full_water_parametrs = water_parametrs, water_consumption_level=water_consumption_level).first()
+            filler = Fillers.objects.filter(full_water_parametrs = water_parametrs, water_consumption_level=water_consumption_level).first()
         
-        if not(complect is None):
-            montage_works = MontageWork.objects.filter(complects = complect)
-            edit_complect_form = EditComplectForm(complect, filler, water_consumption_level, water_parametrs)
-            return render(requst,template_name=self.template_name,context={'search_form': form, 'edit_form': edit_complect_form})
+            if not(complect is None or filler is None):
+                montage_works = MontageWork.objects.filter(complects = complect)
+                edit_complect_form = EditComplectForm(complect, filler, water_consumption_level, water_parametrs)
+                return render(requst,template_name=self.template_name,context={'search_form': form, 'edit_form': edit_complect_form})
         return render(requst,template_name=self.template_name,context={'search_form': form})
     
 class GetContractView(View):
@@ -93,118 +93,3 @@ class GetContractView(View):
         word_docx = generator.generate_contract(complect, builder_object)
         contract_file = word_docx
         return FileResponse(contract_file, filename='contact.docx')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class SearcherVew(View):
-
-#     def get(self, request):
-#         # <view logic>
-#         print(f'-->> session is {request.session}')
-#         calc_form = ComplectSearchForm()
-
-#         return render(request, template_name='calc_app/calc_page.html', context={'complect_search_form':calc_form})
-    
-#     def post(self, request):
-#         form_name = request.POST.get('form_name')
-#         print(form_name)
-
-#         if form_name == 'search_form':
-#             submitted_form = ComplectSearchForm(request.POST)
-#         if form_name == 'confirm_form':
-#             # print(request.POST.get('complect'))
-#             submitted_form = ComplectConfirmationForm(None,None,None,None,request.POST)
-
-#         print(request.POST)
-#         if submitted_form.is_valid():
-            
-#             # print(word_docx)
-#             if form_name == 'search_form':
-#                 data = submitted_form.cleaned_data
-#                 full_water_parametrs = FullWaterParametrs.objects.filter(
-#                 hardness=data['hardness'],
-#                 ferum=data['ferum'],
-#                 po=data['po'],
-#                 hydrogen_sulfite=data['hydrogen_sulfite'],
-#                 ammonium=data['ammonium'],
-#                 manganese=data['manganese']).first()
-#                 object_info = BuilderObject.objects.filter(water_consumption=data['water_consumption']).first()
-#                 print('type object info: ',type(object_info))
-#                 print(full_water_parametrs)
-#                 complect = Complects.objects.filter(builder_object=object_info).filter(full_water_parametrs=full_water_parametrs).first()
-#                 filler = Fillers.objects.filter(builder_object=object_info, full_water_parametrs=full_water_parametrs).first()
-#                 print(complect, type(complect))
-#                 generator = DocxGenerator()
-#                 word_docx = generator.generate_deal(complect, object_info, full_water_parametrs)
-#                 files['a'] = word_docx
-#                 confirm_form = ComplectConfirmationForm(complect,full_water_parametrs,object_info,filler,word_docx)
-
-#                 return render(request, template_name='calc_app/calc_page.html', context={
-#                     'complect_search_form':submitted_form, 
-#                     'confirm_form': confirm_form})
-#         else:
-#             return FileResponse(files['a'], filename='doc.docx')
-        
-# class SignAgreementView(View):
-#     def get(self):
-#         return render()

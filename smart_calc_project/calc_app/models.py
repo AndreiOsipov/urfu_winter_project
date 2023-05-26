@@ -1,19 +1,8 @@
 from django.db import models
 from django.db.models.functions import Length
+from .genereator_for_fields import ChoicesGenerator
 
 models.CharField.register_lookup(Length)
-
-class ChoicesGenerator:
-    def generate_tuple(self, value):
-        return (value, f'до {value}')
-    
-    def generate_choices(self, start, end, step):
-        choices = []
-
-        for i in range(start, end, step):
-            choices.append((i,f'до {i+1}'))
-
-        return choices
 
 class WaterConsumptionLevel(models.Model):
     water_consumption = models.FloatField(choices=[

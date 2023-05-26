@@ -2,11 +2,12 @@ import os
 from django.core.exceptions import ValidationError
 from django import forms
 from django.db.models import QuerySet
-from calc_app.models import ChoicesGenerator
+from .genereator_for_fields import ChoicesGenerator
 from .models import Complects, Equipments, ComplectsEquipments, Fillers, BuilderObject,FullWaterParametrs, WaterConsumptionLevel
 
 class FloatChoiceField(forms.ChoiceField):
     def to_python(self, value):
+
         return float(super().to_python(value))
 
 class EquipmentRow:
@@ -90,7 +91,7 @@ class EditComplectForm(forms.Form):
             self.fields['water_consumption_level_id'] = forms.CharField(max_length=20,initial=water_consumption_level.id, widget=forms.HiddenInput())
             self.fields['full_water_parametrs_id'] = forms.CharField(max_length=20, initial=water_paramers.id, widget=forms.HiddenInput())
             
-            print(self.fields)
+            # print(self.fields)
 
 class ComplectSearchForm(forms.Form):
     choices_generator = ChoicesGenerator()
@@ -125,7 +126,7 @@ def init_from_digits(
     hydrogen_sulfite=None,
     ammonium=None,
     manganese=None,
-    condensation_protection=None
+    condensation_protection=False
     ):
 
     water_consumptions_tuple_matches = {
@@ -142,7 +143,7 @@ def init_from_digits(
     6: (6,'до 6'),
     7: (7,'до 7'),
     }
-
+    print(f'кортеж, обозначающий количество людей: {people_number_tuple_matches}')
     choices_generator = ChoicesGenerator()
     hardness_tuple = choices_generator.generate_tuple(hardness)
     ferum_tuple = choices_generator.generate_tuple(ferum)
@@ -151,7 +152,11 @@ def init_from_digits(
     ammonium_tuple = choices_generator.generate_tuple(ammonium)
     manganese_tuple = choices_generator.generate_tuple(manganese)
     condensation_protection_tuple = choices_generator.generate_tuple(condensation_protection)
-
+    print(
+        f'ferum: {ferum_tuple},\n \
+        hardness: {hardness_tuple},\n \
+        hydrogen: {hydrogen_sulfite_tuple},\n \
+        ammonium: {ammonium_tuple},')
     return ComplectSearchForm(
         data={
             "form_name":"search_form",
@@ -159,9 +164,8 @@ def init_from_digits(
             "people_number_tuple_matches":people_number_tuple_matches[people_number],
             "hardness":hardness_tuple,
             "ferum":ferum_tuple,
-            "po":po_tuple[po],
+            "po":po_tuple,
             "hydrogen_sulfite":hydrogen_sulfite_tuple,
             "ammonium":ammonium_tuple,
             "manganese":manganese_tuple,
-            "condensation_protection":condensation_protection_tuple
         })
