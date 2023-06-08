@@ -26,11 +26,17 @@
                 <input type="submit" value="найти" name="" id="">
             </form>
             {% if edit_form %}
-            <form action="{%url 'calc_app:get_contract' %}" method="get">    
+            <form action="{%url 'calc_app:get_contract' %}" method="post">    
                 {% csrf_token %}
                 <p>{{edit_form.complect.label}} {{edit_form.complect}}</p>
+                <p>{{edit_form.water_consumption_level_id}}</p>
+                <p>{{edit_form.full_water_parametrs_id}}</p>
                 {% for equipment_row in edit_form.equipments_fields %}
-                    <p>{{ equipment_row.name_form }} {{equipment_row.price_form}}</p>
+                    <p>{{ equipment_row.name_form }} {{equipment_row.price_form}} {{equipment_row.row_id}}</p>
+                {% endfor %}
+                <p>рекомендуются следующие работы: </p>
+                {% for montage_work in edit_form.montage_works_fields %}
+                <p>{{montage_work.name_form}} {{montage_work.price_form}} {{montage_work.row_id}}</p>
                 {% endfor %}
                 <p>{{edit_form.filler}} {{edit_form.filler_price}}</p>
                 <div>

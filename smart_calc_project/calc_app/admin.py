@@ -9,7 +9,8 @@ from .models import(
     ComplectsEquipments,
     EquipmentType,
     MontageWork,
-    ComplectMontage
+    ComplectMontage,
+    Admixture
 )
 
 # class ColumnsInline(admin.TabularInline):
@@ -38,7 +39,7 @@ class ComplectAdmin(admin.ModelAdmin):
         ComplectsEquipmentsInline,
         ComplectMontageinline,
     ]
-
+admin.site.register(Admixture)
 admin.site.register(MontageWork)
 admin.site.register(FullWaterParametrs)
 admin.site.register(WaterConsumptionLevel)

@@ -3,32 +3,40 @@ from django.core.exceptions import ValidationError
 from django import forms
 from django.db.models import QuerySet
 from .genereator_for_fields import ChoicesGenerator
-from .models import Complects, Equipments, ComplectsEquipments, Fillers, BuilderObject,FullWaterParametrs, WaterConsumptionLevel
+from .models import (
+    Complects, 
+    Equipments,  
+    Fillers,
+    FullWaterParametrs,
+    WaterConsumptionLevel,
+    MontageWork)
 
 class FloatChoiceField(forms.ChoiceField):
     def to_python(self, value):
-
         return float(super().to_python(value))
 
-class EquipmentRow:
+class NamePriceRow:
     '''
     нужен, имя и цену оборудования сгруппировать в одну строку
     '''
-    def __init__(self, name_form, price_form) -> None:
+    def __init__(self, name_form, price_form, row_id) -> None:
         self.name_form = name_form
         self.price_form = price_form
+        self.row_id = row_id
 
+    def __str__(self) -> str:
+        return f'{self.name_form} --- {self.price_form} --- {self.row_id}'
 class EditComplectForm(forms.Form):
-    form_name = forms.CharField(max_length=20, initial='confirm_form', widget=forms.HiddenInput)
-    client_first_name = forms.CharField(max_length=50, label='имя клиента')
-    client_last_name = forms.CharField(max_length=50, label='фамилия клиента')
-    client_phone_number = forms.CharField(max_length=10, label='номер телефона клиента')
+    form_name = forms.CharField(max_length=20, initial='confirm_form', widget=forms.HiddenInput,required=False)
+    client_first_name = forms.CharField(max_length=50, label='имя клиента',required=False)
+    client_last_name = forms.CharField(max_length=50, label='фамилия клиента',required=False)
+    client_phone_number = forms.CharField(max_length=10, label='номер телефона клиента',required=False)
 
-    builder_type = forms.CharField(max_length=50,label='тип объекта')
-    montage_place = forms.CharField(max_length=50, label='место установки')
-    main_water_source = forms.CharField(max_length=50, label='основной источник воды')
-    sewerage_type = forms.CharField(max_length=50, label='тип канализации')
-
+    builder_type = forms.CharField(max_length=50,label='тип объекта',required=False)
+    montage_place = forms.CharField(max_length=50, label='место установки',required=False)
+    main_water_source = forms.CharField(max_length=50, label='основной источник воды',required=False)
+    sewerage_type = forms.CharField(max_length=50, label='тип канализации',required=False)
+    
 
     def __generate_equipments_field(self, equipment: Equipments):
         equipments_with_same_type = Equipments.objects.filter(equipment_type = equipment.equipment_type)
@@ -51,13 +59,13 @@ class EditComplectForm(forms.Form):
     def __get_fillers_choices(self):
         all_fillers = Fillers.objects.all()
         return [
-            (filler.name, filler.name)
+            (filler.id, filler.name)
             for filler in all_fillers
         ]
     
-    def __init__(self,complect:Complects=None,filler:Fillers=None,water_consumption_level:WaterConsumptionLevel=None,water_paramers:FullWaterParametrs=None, *args, **kwargs) -> None:
-        
-        super(EditComplectForm, self).__init__(*args, **kwargs)
+    def __init__(self,complect:Complects=None,filler:Fillers=None,water_consumption_level:WaterConsumptionLevel=None,water_paramers:FullWaterParametrs=None, not_edited_data = None) -> None:
+        super(EditComplectForm, self).__init__(data=not_edited_data)       
+
         if not (complect is None):
             equipments_for_complect = Equipments.objects.filter(complects = complect)
             equipment_type_equipment_dict = self.__get_equipment_type_equipment_dict()
@@ -67,10 +75,12 @@ class EditComplectForm(forms.Form):
 
             ind = 0
             self.equipments_fields = []
+            self.montage_works_fields = []
             self.complect = complect
             
-            self.fields[f'complect'] = forms.ChoiceField(choices=[(complect.name,complect.name)], label='комлект')
-        
+            self.fields[f'complect'] = forms.ChoiceField(choices=[(complect.id,complect.name)], label='комлект')
+            montage_works = MontageWork.objects.filter(complects = complect)
+
             for equipment in equipments_for_complect:
                 equipmnt_field = self.__generate_equipments_field(equipment)
                 equipment_price_field = self.__generate_equipment_price_field(equipment)
@@ -79,19 +89,23 @@ class EditComplectForm(forms.Form):
                 self.fields[f'equipment_price_{ind}'] = equipment_price_field
                 self.fields[f'equipment_id_{ind}'] = forms.CharField(max_length = 20, initial=equipment.id, widget=forms.HiddenInput())
                 # self.fields[f'docs'] = forms.FileField(initial=word_docx)
-                self.equipments_fields.append(EquipmentRow(self[f'equipment_name_{ind}'], self[f'equipment_price_{ind}']))
+                self.equipments_fields.append(NamePriceRow(self[f'equipment_name_{ind}'], self[f'equipment_price_{ind}'], self[f'equipment_id_{ind}']))
                 ind += 1
-            fillers_choices = self.__get_fillers_choices()
+            
+            ind = 0
+            for montage_work in montage_works:
+                self.fields[f'montage_work_name_{ind}'] = forms.CharField(max_length=50,initial=montage_work.name)
+                self.fields[f'montage_work_price_{ind}'] = forms.FloatField(initial=montage_work.price)
+                self.fields[f'montage_work_id_{ind}'] = forms.CharField(max_length=20,initial=montage_work.id, widget=forms.HiddenInput())
+                self.montage_works_fields.append(NamePriceRow(self[f'montage_work_name_{ind}'], self[f'montage_work_price_{ind}'],self[f'montage_work_id_{ind}']))
+                ind+=1
 
-            self.fields['filler'] = forms.ChoiceField(choices=fillers_choices,initial=(filler.name, filler.name))
+            fillers_choices = self.__get_fillers_choices()
+            self.fields['filler'] = forms.ChoiceField(choices=fillers_choices,initial=(filler.id, filler.name),required=False)
             self.fields['filler_price'] = forms.FloatField(initial=filler.price)
             
-            self.fields['filler_id'] = forms.CharField(max_length=20, initial=filler.id, widget=forms.HiddenInput())
-            self.fields['complect_id'] = forms.CharField(max_length=20, initial=complect.id, widget=forms.HiddenInput())
             self.fields['water_consumption_level_id'] = forms.CharField(max_length=20,initial=water_consumption_level.id, widget=forms.HiddenInput())
             self.fields['full_water_parametrs_id'] = forms.CharField(max_length=20, initial=water_paramers.id, widget=forms.HiddenInput())
-            
-            # print(self.fields)
 
 class ComplectSearchForm(forms.Form):
     choices_generator = ChoicesGenerator()
@@ -157,6 +171,7 @@ def init_from_digits(
         hardness: {hardness_tuple},\n \
         hydrogen: {hydrogen_sulfite_tuple},\n \
         ammonium: {ammonium_tuple},')
+    
     return ComplectSearchForm(
         data={
             "form_name":"search_form",

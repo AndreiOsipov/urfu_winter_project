@@ -1,8 +1,18 @@
 from django.db import models
 from django.db.models.functions import Length
 from .genereator_for_fields import ChoicesGenerator
-
 models.CharField.register_lookup(Length)
+
+
+class Admixture(models.Model):
+    name = models.CharField(max_length=20, verbose_name='название')
+    exceeding_consecuences = models.TextField(verbose_name='последствия превышения')
+    recommendations = models.TextField(verbose_name='рекомендации')
+    criitical_value = models.FloatField(verbose_name='критическое значение')
+
+    class Meta:
+        verbose_name = 'Примесь'
+        verbose_name_plural = 'Примеси'
 
 class WaterConsumptionLevel(models.Model):
     water_consumption = models.FloatField(choices=[
@@ -14,6 +24,9 @@ class WaterConsumptionLevel(models.Model):
     people_number = models.IntegerField(choices=[(3,'до 3'), (4, 'до 4'), (5, 'до 5'), (6,'до 6'), (7,'до 7')], verbose_name='еоличество человек')
     human_daily_norm = models.FloatField(default=0.15, verbose_name='норма потребления воды на человека в сутки')
 
+    @property
+    def dayly_consumption(self):
+        return self.human_daily_norm * self.people_number
     class Meta:
         verbose_name = 'Уровень потреьоения воды'
         verbose_name_plural = 'уровни потребления воды'
@@ -22,14 +35,55 @@ class FullWaterParametrs(models.Model):
     choices_generator = ChoicesGenerator()
     hardness = models.FloatField(choices=choices_generator.generate_choices(0,16,1), verbose_name='жесткость')
     ferum = models.FloatField(choices=choices_generator.generate_choices(0,21, 1),verbose_name='железо')
-
     po = models.FloatField(choices=choices_generator.generate_choices(0,16,1),verbose_name='ПО')
     hydrogen_sulfite = models.FloatField(choices=choices_generator.generate_choices(0,6,1), verbose_name='сервоводород')
     ammonium = models.FloatField(choices=choices_generator.generate_choices(0,6,1),verbose_name='аммоний')
     manganese = models.FloatField(choices=choices_generator.generate_choices(0,6,1),verbose_name='марганец')
     
-    exceeding_consequence = models.TextField(blank=True, verbose_name='последстваия превышения')
-    recommendations = models.TextField(blank=True, verbose_name='рекоммендации')
+
+#filter vs get ?
+
+    @property
+    def get_default_hardness_exceeding(self):
+        hardness_admixture = Admixture.objects.filter(name='жесткость').first()
+        if not (hardness_admixture is None):
+            return hardness_admixture.pk
+    
+    @property
+    def get_default_ferum_exceeding(self):
+        ferum_admixture = Admixture.objects.filter(name='железо').first()
+        if not (ferum_admixture is None):
+            return ferum_admixture.pk
+
+    @property
+    def get_default_hydrogen_sulfite_exceeding(self):
+        hydrogen_admixture = Admixture.objects.filter(name='сероводород').first()
+        if not(hydrogen_admixture is None):
+            return hydrogen_admixture.pk
+        
+    @property
+    def get_default_ammonium_exceeding(self):
+        ammonium_admixture = Admixture.objects.filter(name='аммоний').first()
+        if not(ammonium_admixture is None):
+            return ammonium_admixture.pk
+    
+    @property
+    def get_default_manganese_exceeding(self):
+        manganese_admixture = Admixture.objects.filter(name='марганец').first()
+        if not(manganese_admixture is None):
+            return manganese_admixture.pk
+    
+    @property
+    def get_default_po_exceeding(self):
+        po_admixture = Admixture.objects.filter(name='по').first()
+        if not(po_admixture is None):
+            return po_admixture.pk
+    
+
+
+
+    # exceeding_consequence = models.TextField(blank=True, verbose_name='последстваия превышения')
+    # recommendations = models.TextField(blank=True, verbose_name='рекоммендации')
     
     def __str__(self) -> str:
         return 'жесткость '+str(self.hardness) + 'железо '+ str(self.ferum) +'ПО '+ str(self.po) +'сероводород '+ str(self.hydrogen_sulfite) +'аммоний '+ str(self.ammonium) +'марганец '+ str(self.manganese)
@@ -133,22 +187,9 @@ class BuilderObject(models.Model):
     main_water_source = models.CharField(max_length=50,choices=[('W','скважина'),], verbose_name='источник воды')
     sewerage_type = models.CharField(max_length=50, verbose_name='тип каназизации')
 
-    water_consumption = models.FloatField(choices=[
-        (1.2,'до 1,2 3 точки (пример: 2 крана и душ)'),
-        (1.8,'до 1,8 4-5 точек (пример: 2 крана, стиральная машина/посудомоечная машина, душ) (пиктограммами)'),
-        (2.4,'до 2,4 4-5 точек большего объема (пример: 2 крана, стиральная машина и посудомоечная машина, тропический душ)'),
-        (3,'до 3 от 5 точки большего объема (пример: бассейн, или 2 крана, стиральная машина и посудомоечная машина, тропический душ)')
-        ], verbose_name='потребление воды (л/ч)')
-    
-    people_number = models.IntegerField(choices=[(3,'до 3'), (4, 'до 4'), (5, 'до 5'), (6,'до 6'), (7,'до 7')], verbose_name='еоличество человек')
-    human_daily_norm = models.FloatField(default=0.15, verbose_name='норма потребления воды на человека в сутки')
-
     def __str__(self) -> str:
-        return str(self.daily_water_consumption)
+        return str(self.builder_type)
     
-    @property
-    def daily_water_consumption(self):
-        return round(self.human_daily_norm * self.people_number, 2)
     
     class Meta:
         verbose_name = 'об объекте'
